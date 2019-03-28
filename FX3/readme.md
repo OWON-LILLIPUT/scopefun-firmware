@@ -11,10 +11,10 @@ FX3 firmware handles:
 
 ## Getting started
 
-For comiling the FX3 firmware you must install the [FX3 SDK](http://www.cypress.com/documentation/software-and-drivers/ez-usb-fx3-software-development-kit) and imnport FX3fw project into the EZ USB Suite.
+For comiling the FX3 firmware you must install the [FX3 SDK](http://www.cypress.com/documentation/software-and-drivers/ez-usb-fx3-software-development-kit) and import FX3fw project into the EZ USB Suite.
 
 ## Licensing
 
 FX3 firmware source files are licensed under GNU General Public License v3 (GPLv3). For details please see the COPYING file(s) and file headers.
 
-Please note however that license terms stated do not extend to any files provided with the Cypress FX3 SDK. For information regarding Cypress license plase refer to license.txt provided with the FX3 SDK in the following path: <Install Directory>\Cypress\EZ-USB FX3 SDK\1.3\license
+Please note however that license terms stated do not extend to any files provided with the Cypress FX3 SDK. For information regarding Cypress license plase refer to license.txt provided with the FX3 SDK in the following path: \<Install Directory>\Cypress\EZ-USB FX3 SDK\1.3\license
