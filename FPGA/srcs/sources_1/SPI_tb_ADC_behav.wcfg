@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="SPI_tb_ADC_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="SPI_tb_ADC" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="7296666667fs"></ZoomStartTime>
+      <ZoomEndTime time="47696666668fs"></ZoomEndTime>
+      <Cursor1Time time="14030000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="146"></NameColumnWidth>
+      <ValueColumnWidth column_width="68"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="20" />
+   <wvobject fp_name="/SPI_tb_ADC/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/clk_divide" type="array">
+      <obj_property name="ElementShortName">clk_divide[4:0]</obj_property>
+      <obj_property name="ObjectShortName">clk_divide[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/spi_data" type="array">
+      <obj_property name="ElementShortName">spi_data[15:0]</obj_property>
+      <obj_property name="ObjectShortName">spi_data[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/spi_write_trig" type="logic">
+      <obj_property name="ElementShortName">spi_write_trig</obj_property>
+      <obj_property name="ObjectShortName">spi_write_trig</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/configureADC" type="logic">
+      <obj_property name="ElementShortName">configureADC</obj_property>
+      <obj_property name="ObjectShortName">configureADC</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/spi_busy" type="logic">
+      <obj_property name="ElementShortName">spi_busy</obj_property>
+      <obj_property name="ObjectShortName">spi_busy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/cs" type="logic">
+      <obj_property name="ElementShortName">cs</obj_property>
+      <obj_property name="ObjectShortName">cs</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/sck" type="logic">
+      <obj_property name="ElementShortName">sck</obj_property>
+      <obj_property name="ObjectShortName">sck</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/uut/spi_cnt" type="other">
+      <obj_property name="ElementShortName">spi_cnt</obj_property>
+      <obj_property name="ObjectShortName">spi_cnt</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/si" type="logic">
+      <obj_property name="ElementShortName">si</obj_property>
+      <obj_property name="ObjectShortName">si</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/uut/spi_state" type="array">
+      <obj_property name="ElementShortName">spi_state[1:0]</obj_property>
+      <obj_property name="ObjectShortName">spi_state[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/adc_spi_data" type="array">
+      <obj_property name="ElementShortName">adc_spi_data[23:0]</obj_property>
+      <obj_property name="ObjectShortName">adc_spi_data[23:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/SPI_LENGTH" type="other">
+      <obj_property name="ElementShortName">SPI_LENGTH</obj_property>
+      <obj_property name="ObjectShortName">SPI_LENGTH</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/DAC_A" type="array">
+      <obj_property name="ElementShortName">DAC_A[1:0]</obj_property>
+      <obj_property name="ObjectShortName">DAC_A[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/DAC_B" type="array">
+      <obj_property name="ElementShortName">DAC_B[1:0]</obj_property>
+      <obj_property name="ObjectShortName">DAC_B[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/DAC_C" type="array">
+      <obj_property name="ElementShortName">DAC_C[1:0]</obj_property>
+      <obj_property name="ObjectShortName">DAC_C[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/DAC_D" type="array">
+      <obj_property name="ElementShortName">DAC_D[1:0]</obj_property>
+      <obj_property name="ObjectShortName">DAC_D[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/clk_period" type="other">
+      <obj_property name="ElementShortName">clk_period</obj_property>
+      <obj_property name="ObjectShortName">clk_period</obj_property>
+   </wvobject>
+   <wvobject fp_name="/SPI_tb_ADC/clk_divide_period" type="other">
+      <obj_property name="ElementShortName">clk_divide_period</obj_property>
+      <obj_property name="ObjectShortName">clk_divide_period</obj_property>
+   </wvobject>
+</wave_config>

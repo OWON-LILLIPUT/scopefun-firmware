@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="awg_core_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="awg_core_tb" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="11250000000fs"></ZoomStartTime>
+      <ZoomEndTime time="357750000001fs"></ZoomEndTime>
+      <Cursor1Time time="300000000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="219"></NameColumnWidth>
+      <ValueColumnWidth column_width="80"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="32" />
+   <wvobject fp_name="/awg_core_tb/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generator1On" type="logic">
+      <obj_property name="ElementShortName">generator1On</obj_property>
+      <obj_property name="ObjectShortName">generator1On</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generator2On" type="logic">
+      <obj_property name="ElementShortName">generator2On</obj_property>
+      <obj_property name="ObjectShortName">generator2On</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/genSignal_1" type="array">
+      <obj_property name="ElementShortName">genSignal_1[11:0]</obj_property>
+      <obj_property name="ObjectShortName">genSignal_1[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/ram_addrb_awg_1" type="array">
+      <obj_property name="ElementShortName">ram_addrb_awg_1[11:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_addrb_awg_1[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/uut/angle_generator_1/kot_gen" type="array">
+      <obj_property name="ElementShortName">kot_gen[11:0]</obj_property>
+      <obj_property name="ObjectShortName">kot_gen[11:0]</obj_property>
+      <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="CellHeight">100</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/uut/kot_gen_1_tmp" type="array">
+      <obj_property name="ElementShortName">kot_gen_1_tmp[11:0]</obj_property>
+      <obj_property name="ObjectShortName">kot_gen_1_tmp[11:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="CellHeight">100</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorType_1" type="array">
+      <obj_property name="ElementShortName">generatorType_1[3:0]</obj_property>
+      <obj_property name="ObjectShortName">generatorType_1[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorVoltage_1" type="array">
+      <obj_property name="ElementShortName">generatorVoltage_1[0:-11]</obj_property>
+      <obj_property name="ObjectShortName">generatorVoltage_1[0:-11]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorOffset_1" type="array">
+      <obj_property name="ElementShortName">generatorOffset_1[11:0]</obj_property>
+      <obj_property name="ObjectShortName">generatorOffset_1[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorDuty_1" type="array">
+      <obj_property name="ElementShortName">generatorDuty_1[11:0]</obj_property>
+      <obj_property name="ObjectShortName">generatorDuty_1[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorDelta_1" type="array">
+      <obj_property name="ElementShortName">generatorDelta_1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">generatorDelta_1[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorCustomSample_1" type="array">
+      <obj_property name="ElementShortName">generatorCustomSample_1[11:0]</obj_property>
+      <obj_property name="ObjectShortName">generatorCustomSample_1[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/genSignal_1" type="array">
+      <obj_property name="ElementShortName">genSignal_1[11:0]</obj_property>
+      <obj_property name="ObjectShortName">genSignal_1[11:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/genSignal_2" type="array">
+      <obj_property name="ElementShortName">genSignal_2[11:0]</obj_property>
+      <obj_property name="ObjectShortName">genSignal_2[11:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/ram_addrb_awg_2" type="array">
+      <obj_property name="ElementShortName">ram_addrb_awg_2[11:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_addrb_awg_2[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorType_2" type="array">
+      <obj_property name="ElementShortName">generatorType_2[3:0]</obj_property>
+      <obj_property name="ObjectShortName">generatorType_2[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorVoltage_2" type="array">
+      <obj_property name="ElementShortName">generatorVoltage_2[0:-11]</obj_property>
+      <obj_property name="ObjectShortName">generatorVoltage_2[0:-11]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorOffset_2" type="array">
+      <obj_property name="ElementShortName">generatorOffset_2[11:0]</obj_property>
+      <obj_property name="ObjectShortName">generatorOffset_2[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorDuty_2" type="array">
+      <obj_property name="ElementShortName">generatorDuty_2[11:0]</obj_property>
+      <obj_property name="ObjectShortName">generatorDuty_2[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorDelta_2" type="array">
+      <obj_property name="ElementShortName">generatorDelta_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">generatorDelta_2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/generatorCustomSample_2" type="array">
+      <obj_property name="ElementShortName">generatorCustomSample_2[11:0]</obj_property>
+      <obj_property name="ObjectShortName">generatorCustomSample_2[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="vbus279" type="vbus">
+      <obj_property name="label">MaxisY</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="CellHeight">100</obj_property>
+      <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+      <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+      <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+      <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_LINEAR</obj_property>
+      <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+      <obj_property name="AnalogHorizLine">0.000000</obj_property>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[28]" type="logic">
+         <obj_property name="ElementShortName">[28]</obj_property>
+         <obj_property name="ObjectShortName">[28]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[27]" type="logic">
+         <obj_property name="ElementShortName">[27]</obj_property>
+         <obj_property name="ObjectShortName">[27]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[26]" type="logic">
+         <obj_property name="ElementShortName">[26]</obj_property>
+         <obj_property name="ObjectShortName">[26]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[25]" type="logic">
+         <obj_property name="ElementShortName">[25]</obj_property>
+         <obj_property name="ObjectShortName">[25]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[24]" type="logic">
+         <obj_property name="ElementShortName">[24]</obj_property>
+         <obj_property name="ObjectShortName">[24]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[23]" type="logic">
+         <obj_property name="ElementShortName">[23]</obj_property>
+         <obj_property name="ObjectShortName">[23]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[22]" type="logic">
+         <obj_property name="ElementShortName">[22]</obj_property>
+         <obj_property name="ObjectShortName">[22]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[21]" type="logic">
+         <obj_property name="ElementShortName">[21]</obj_property>
+         <obj_property name="ObjectShortName">[21]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[20]" type="logic">
+         <obj_property name="ElementShortName">[20]</obj_property>
+         <obj_property name="ObjectShortName">[20]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[19]" type="logic">
+         <obj_property name="ElementShortName">[19]</obj_property>
+         <obj_property name="ObjectShortName">[19]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[18]" type="logic">
+         <obj_property name="ElementShortName">[18]</obj_property>
+         <obj_property name="ObjectShortName">[18]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[17]" type="logic">
+         <obj_property name="ElementShortName">[17]</obj_property>
+         <obj_property name="ObjectShortName">[17]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[16]" type="logic">
+         <obj_property name="ElementShortName">[16]</obj_property>
+         <obj_property name="ObjectShortName">[16]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="vbus293" type="vbus">
+      <obj_property name="label">MaxisX</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="CellHeight">100</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+      <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+      <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+      <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_LINEAR</obj_property>
+      <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+      <obj_property name="AnalogHorizLine">0.000000</obj_property>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[12]" type="logic">
+         <obj_property name="ElementShortName">[12]</obj_property>
+         <obj_property name="ObjectShortName">[12]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[11]" type="logic">
+         <obj_property name="ElementShortName">[11]</obj_property>
+         <obj_property name="ObjectShortName">[11]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[10]" type="logic">
+         <obj_property name="ElementShortName">[10]</obj_property>
+         <obj_property name="ObjectShortName">[10]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[9]" type="logic">
+         <obj_property name="ElementShortName">[9]</obj_property>
+         <obj_property name="ObjectShortName">[9]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[8]" type="logic">
+         <obj_property name="ElementShortName">[8]</obj_property>
+         <obj_property name="ObjectShortName">[8]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[7]" type="logic">
+         <obj_property name="ElementShortName">[7]</obj_property>
+         <obj_property name="ObjectShortName">[7]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[6]" type="logic">
+         <obj_property name="ElementShortName">[6]</obj_property>
+         <obj_property name="ObjectShortName">[6]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[5]" type="logic">
+         <obj_property name="ElementShortName">[5]</obj_property>
+         <obj_property name="ObjectShortName">[5]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[4]" type="logic">
+         <obj_property name="ElementShortName">[4]</obj_property>
+         <obj_property name="ObjectShortName">[4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[3]" type="logic">
+         <obj_property name="ElementShortName">[3]</obj_property>
+         <obj_property name="ObjectShortName">[3]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[2]" type="logic">
+         <obj_property name="ElementShortName">[2]</obj_property>
+         <obj_property name="ObjectShortName">[2]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[1]" type="logic">
+         <obj_property name="ElementShortName">[1]</obj_property>
+         <obj_property name="ObjectShortName">[1]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/awg_core_tb/uut/cordic_0_core_1/m_axis_dout_tdata[0]" type="logic">
+         <obj_property name="ElementShortName">[0]</obj_property>
+         <obj_property name="ObjectShortName">[0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/dac_data_2" type="array">
+      <obj_property name="ElementShortName">dac_data_2[11:0]</obj_property>
+      <obj_property name="ObjectShortName">dac_data_2[11:0]</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/dac_clk" type="logic">
+      <obj_property name="ElementShortName">dac_clk</obj_property>
+      <obj_property name="ObjectShortName">dac_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/dac_clk_1" type="logic">
+      <obj_property name="ElementShortName">dac_clk_1</obj_property>
+      <obj_property name="ObjectShortName">dac_clk_1</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/dac_clk_2" type="logic">
+      <obj_property name="ElementShortName">dac_clk_2</obj_property>
+      <obj_property name="ObjectShortName">dac_clk_2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/dac_data" type="array">
+      <obj_property name="ElementShortName">dac_data[11:0]</obj_property>
+      <obj_property name="ObjectShortName">dac_data[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/bH" type="other">
+      <obj_property name="ElementShortName">bH</obj_property>
+      <obj_property name="ObjectShortName">bH</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/bL" type="other">
+      <obj_property name="ElementShortName">bL</obj_property>
+      <obj_property name="ObjectShortName">bL</obj_property>
+   </wvobject>
+   <wvobject fp_name="/awg_core_tb/clk_period" type="other">
+      <obj_property name="ElementShortName">clk_period</obj_property>
+      <obj_property name="ObjectShortName">clk_period</obj_property>
+   </wvobject>
+</wave_config>

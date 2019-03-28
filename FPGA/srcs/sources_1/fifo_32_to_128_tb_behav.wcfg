@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="fifo_32_to_128_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="fifo_32_to_128_tb" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="10396766333fs"></ZoomStartTime>
+      <ZoomEndTime time="10758766334fs"></ZoomEndTime>
+      <Cursor1Time time="10698433000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="285"></NameColumnWidth>
+      <ValueColumnWidth column_width="245"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="40" />
+   <wave_markers>
+      <marker time="74485000000" label="" />
+   </wave_markers>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/clk_wr" type="logic">
+      <obj_property name="ElementShortName">clk_wr</obj_property>
+      <obj_property name="ObjectShortName">clk_wr</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/clk_rd" type="logic">
+      <obj_property name="ElementShortName">clk_rd</obj_property>
+      <obj_property name="ObjectShortName">clk_rd</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/WriteEn" type="logic">
+      <obj_property name="ElementShortName">WriteEn</obj_property>
+      <obj_property name="ObjectShortName">WriteEn</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/DataIn" type="array">
+      <obj_property name="ElementShortName">DataIn[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DataIn[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/ReadEn" type="logic">
+      <obj_property name="ElementShortName">ReadEn</obj_property>
+      <obj_property name="ObjectShortName">ReadEn</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/DataOut" type="array">
+      <obj_property name="ElementShortName">DataOut[127:0]</obj_property>
+      <obj_property name="ObjectShortName">DataOut[127:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/Empty" type="logic">
+      <obj_property name="ElementShortName">Empty</obj_property>
+      <obj_property name="ObjectShortName">Empty</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/AlmostEmpty" type="logic">
+      <obj_property name="ElementShortName">AlmostEmpty</obj_property>
+      <obj_property name="ObjectShortName">AlmostEmpty</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/Full" type="logic">
+      <obj_property name="ElementShortName">Full</obj_property>
+      <obj_property name="ObjectShortName">Full</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/AlmostFull" type="logic">
+      <obj_property name="ElementShortName">AlmostFull</obj_property>
+      <obj_property name="ObjectShortName">AlmostFull</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/DataIn_1" type="array">
+      <obj_property name="ElementShortName">DataIn_1[63:0]</obj_property>
+      <obj_property name="ObjectShortName">DataIn_1[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/WriteEn_1" type="logic">
+      <obj_property name="ElementShortName">WriteEn_1</obj_property>
+      <obj_property name="ObjectShortName">WriteEn_1</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/DataIn_2" type="array">
+      <obj_property name="ElementShortName">DataIn_2[63:0]</obj_property>
+      <obj_property name="ObjectShortName">DataIn_2[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/WriteEn_2" type="logic">
+      <obj_property name="ElementShortName">WriteEn_2</obj_property>
+      <obj_property name="ObjectShortName">WriteEn_2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/DataOut_1" type="array">
+      <obj_property name="ElementShortName">DataOut_1[63:0]</obj_property>
+      <obj_property name="ObjectShortName">DataOut_1[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/DataOut_2" type="array">
+      <obj_property name="ElementShortName">DataOut_2[63:0]</obj_property>
+      <obj_property name="ObjectShortName">DataOut_2[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/ReadEn_i" type="logic">
+      <obj_property name="ElementShortName">ReadEn_i</obj_property>
+      <obj_property name="ObjectShortName">ReadEn_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/rst_i" type="logic">
+      <obj_property name="ElementShortName">rst_i</obj_property>
+      <obj_property name="ObjectShortName">rst_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/RDCOUNT" type="array">
+      <obj_property name="ElementShortName">RDCOUNT[8:0]</obj_property>
+      <obj_property name="ObjectShortName">RDCOUNT[8:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/WRCOUNT" type="array">
+      <obj_property name="ElementShortName">WRCOUNT[8:0]</obj_property>
+      <obj_property name="ObjectShortName">WRCOUNT[8:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/RDERR" type="logic">
+      <obj_property name="ElementShortName">RDERR</obj_property>
+      <obj_property name="ObjectShortName">RDERR</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/WRERR" type="logic">
+      <obj_property name="ElementShortName">WRERR</obj_property>
+      <obj_property name="ObjectShortName">WRERR</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/AlmostEmpty_2" type="logic">
+      <obj_property name="ElementShortName">AlmostEmpty_2</obj_property>
+      <obj_property name="ObjectShortName">AlmostEmpty_2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/AlmostFull_2" type="logic">
+      <obj_property name="ElementShortName">AlmostFull_2</obj_property>
+      <obj_property name="ObjectShortName">AlmostFull_2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/Full_2" type="logic">
+      <obj_property name="ElementShortName">Full_2</obj_property>
+      <obj_property name="ObjectShortName">Full_2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/Empty_1" type="logic">
+      <obj_property name="ElementShortName">Empty_1</obj_property>
+      <obj_property name="ObjectShortName">Empty_1</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/Empty_2" type="logic">
+      <obj_property name="ElementShortName">Empty_2</obj_property>
+      <obj_property name="ObjectShortName">Empty_2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/RDCOUNT_2" type="array">
+      <obj_property name="ElementShortName">RDCOUNT_2[8:0]</obj_property>
+      <obj_property name="ObjectShortName">RDCOUNT_2[8:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/WRCOUNT_2" type="array">
+      <obj_property name="ElementShortName">WRCOUNT_2[8:0]</obj_property>
+      <obj_property name="ObjectShortName">WRCOUNT_2[8:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/RDERR_2" type="logic">
+      <obj_property name="ElementShortName">RDERR_2</obj_property>
+      <obj_property name="ObjectShortName">RDERR_2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/WRERR_2" type="logic">
+      <obj_property name="ElementShortName">WRERR_2</obj_property>
+      <obj_property name="ObjectShortName">WRERR_2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/in_pkt_sel" type="other">
+      <obj_property name="ElementShortName">in_pkt_sel</obj_property>
+      <obj_property name="ObjectShortName">in_pkt_sel</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/cnt_rst" type="other">
+      <obj_property name="ElementShortName">cnt_rst</obj_property>
+      <obj_property name="ObjectShortName">cnt_rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/reset" type="logic">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/reset_d" type="logic">
+      <obj_property name="ElementShortName">reset_d</obj_property>
+      <obj_property name="ObjectShortName">reset_d</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/reset_dd" type="logic">
+      <obj_property name="ElementShortName">reset_dd</obj_property>
+      <obj_property name="ObjectShortName">reset_dd</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/rst_d" type="logic">
+      <obj_property name="ElementShortName">rst_d</obj_property>
+      <obj_property name="ObjectShortName">rst_d</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/DATA_IN_WIDTH" type="other">
+      <obj_property name="ElementShortName">DATA_IN_WIDTH</obj_property>
+      <obj_property name="ObjectShortName">DATA_IN_WIDTH</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_32_to_128_tb/uut/FIFO_DEPTH" type="other">
+      <obj_property name="ElementShortName">FIFO_DEPTH</obj_property>
+      <obj_property name="ObjectShortName">FIFO_DEPTH</obj_property>
+   </wvobject>
+</wave_config>

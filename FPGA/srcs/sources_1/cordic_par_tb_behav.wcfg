@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="cordic_par_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="cordic_par_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="16000000000fs"></ZoomStartTime>
+      <ZoomEndTime time="358000000001fs"></ZoomEndTime>
+      <Cursor1Time time="301000000000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="17" />
+   <wave_markers>
+      <marker time="55000000" label="" />
+      <marker time="275000000" label="" />
+      <marker time="275000000" label="" />
+   </wave_markers>
+   <wvobject fp_name="/cordic_par_tb/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/generatorOn" type="logic">
+      <obj_property name="ElementShortName">generatorOn</obj_property>
+      <obj_property name="ObjectShortName">generatorOn</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/kot_gen" type="array">
+      <obj_property name="ElementShortName">kot_gen[11:0]</obj_property>
+      <obj_property name="ObjectShortName">kot_gen[11:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/q_gen" type="array">
+      <obj_property name="ElementShortName">q_gen[1:0]</obj_property>
+      <obj_property name="ObjectShortName">q_gen[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/y_sin" type="array">
+      <obj_property name="ElementShortName">y_sin[11:0]</obj_property>
+      <obj_property name="ObjectShortName">y_sin[11:0]</obj_property>
+      <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="CellHeight">100</obj_property>
+      <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+      <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+      <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+      <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+      <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+      <obj_property name="AnalogHorizLine">0.000000</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/uut/cnt_cordic" type="array">
+      <obj_property name="ElementShortName">cnt_cordic[0:10]</obj_property>
+      <obj_property name="ObjectShortName">cnt_cordic[0:10]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/uut/kot_temp" type="array">
+      <obj_property name="ElementShortName">kot_temp[0:10][12:0]</obj_property>
+      <obj_property name="ObjectShortName">kot_temp[0:10][12:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/uut/Y" type="array">
+      <obj_property name="ElementShortName">Y[0:10][11:0]</obj_property>
+      <obj_property name="ObjectShortName">Y[0:10][11:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/x_cos" type="array">
+      <obj_property name="ElementShortName">x_cos[11:0]</obj_property>
+      <obj_property name="ObjectShortName">x_cos[11:0]</obj_property>
+      <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="CellHeight">100</obj_property>
+      <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+      <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+      <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+      <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+      <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+      <obj_property name="AnalogHorizLine">0.000000</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/uut/X" type="array">
+      <obj_property name="ElementShortName">X[0:10][11:0]</obj_property>
+      <obj_property name="ObjectShortName">X[0:10][11:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/cordic_par_tb/uut/X[0]" type="array">
+         <obj_property name="ElementShortName">[0][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[0][11:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cordic_par_tb/uut/X[1]" type="array">
+         <obj_property name="ElementShortName">[1][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[1][11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cordic_par_tb/uut/X[2]" type="array">
+         <obj_property name="ElementShortName">[2][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[2][11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cordic_par_tb/uut/X[3]" type="array">
+         <obj_property name="ElementShortName">[3][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[3][11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cordic_par_tb/uut/X[4]" type="array">
+         <obj_property name="ElementShortName">[4][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[4][11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cordic_par_tb/uut/X[5]" type="array">
+         <obj_property name="ElementShortName">[5][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[5][11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cordic_par_tb/uut/X[6]" type="array">
+         <obj_property name="ElementShortName">[6][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[6][11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cordic_par_tb/uut/X[7]" type="array">
+         <obj_property name="ElementShortName">[7][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[7][11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cordic_par_tb/uut/X[8]" type="array">
+         <obj_property name="ElementShortName">[8][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[8][11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cordic_par_tb/uut/X[9]" type="array">
+         <obj_property name="ElementShortName">[9][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[9][11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cordic_par_tb/uut/X[10]" type="array">
+         <obj_property name="ElementShortName">[10][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[10][11:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/curr_angle" type="array">
+      <obj_property name="ElementShortName">curr_angle[11:0]</obj_property>
+      <obj_property name="ObjectShortName">curr_angle[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/next_angle" type="array">
+      <obj_property name="ElementShortName">next_angle[11:0]</obj_property>
+      <obj_property name="ObjectShortName">next_angle[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/uut/cnt_cordic" type="array">
+      <obj_property name="ElementShortName">cnt_cordic[0:10]</obj_property>
+      <obj_property name="ObjectShortName">cnt_cordic[0:10]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/bH" type="other">
+      <obj_property name="ElementShortName">bH</obj_property>
+      <obj_property name="ObjectShortName">bH</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/bL" type="other">
+      <obj_property name="ElementShortName">bL</obj_property>
+      <obj_property name="ObjectShortName">bL</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/quadrant" type="other">
+      <obj_property name="ElementShortName">quadrant</obj_property>
+      <obj_property name="ObjectShortName">quadrant</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cordic_par_tb/quadrant_d" type="other">
+      <obj_property name="ElementShortName">quadrant_d</obj_property>
+      <obj_property name="ObjectShortName">quadrant_d</obj_property>
+   </wvobject>
+</wave_config>

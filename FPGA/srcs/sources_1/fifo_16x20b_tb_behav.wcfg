@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="fifo_16x20b_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="fifo_16x20b_tb" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="20000000fs"></ZoomStartTime>
+      <ZoomEndTime time="109300001fs"></ZoomEndTime>
+      <Cursor1Time time="86000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="126"></NameColumnWidth>
+      <ValueColumnWidth column_width="129"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="12" />
+   <wvobject fp_name="/fifo_16x20b_tb/we" type="logic">
+      <obj_property name="ElementShortName">we</obj_property>
+      <obj_property name="ObjectShortName">we</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_16x20b_tb/di" type="array">
+      <obj_property name="ElementShortName">di[19:0]</obj_property>
+      <obj_property name="ObjectShortName">di[19:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_16x20b_tb/do" type="array">
+      <obj_property name="ElementShortName">do[19:0]</obj_property>
+      <obj_property name="ObjectShortName">do[19:0]</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_16x20b_tb/test_fifo_16x20b/addr1" type="other">
+      <obj_property name="ElementShortName">addr1</obj_property>
+      <obj_property name="ObjectShortName">addr1</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_16x20b_tb/test_fifo_16x20b/addr2" type="other">
+      <obj_property name="ElementShortName">addr2</obj_property>
+      <obj_property name="ObjectShortName">addr2</obj_property>
+   </wvobject>
+   <wvobject fp_name="vbus57" type="vbus">
+      <obj_property name="label">do[19:10]</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="CellHeight">100</obj_property>
+      <wvobject fp_name="/fifo_16x20b_tb/do[9]" type="logic">
+         <obj_property name="ElementShortName">[9]</obj_property>
+         <obj_property name="ObjectShortName">[9]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[8]" type="logic">
+         <obj_property name="ElementShortName">[8]</obj_property>
+         <obj_property name="ObjectShortName">[8]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[7]" type="logic">
+         <obj_property name="ElementShortName">[7]</obj_property>
+         <obj_property name="ObjectShortName">[7]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[6]" type="logic">
+         <obj_property name="ElementShortName">[6]</obj_property>
+         <obj_property name="ObjectShortName">[6]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[5]" type="logic">
+         <obj_property name="ElementShortName">[5]</obj_property>
+         <obj_property name="ObjectShortName">[5]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[4]" type="logic">
+         <obj_property name="ElementShortName">[4]</obj_property>
+         <obj_property name="ObjectShortName">[4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[3]" type="logic">
+         <obj_property name="ElementShortName">[3]</obj_property>
+         <obj_property name="ObjectShortName">[3]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[2]" type="logic">
+         <obj_property name="ElementShortName">[2]</obj_property>
+         <obj_property name="ObjectShortName">[2]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[1]" type="logic">
+         <obj_property name="ElementShortName">[1]</obj_property>
+         <obj_property name="ObjectShortName">[1]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[0]" type="logic">
+         <obj_property name="ElementShortName">[0]</obj_property>
+         <obj_property name="ObjectShortName">[0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="vbus46" type="vbus">
+      <obj_property name="label">do[9:0]</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="CellHeight">100</obj_property>
+      <wvobject fp_name="/fifo_16x20b_tb/do[19]" type="logic">
+         <obj_property name="ElementShortName">[19]</obj_property>
+         <obj_property name="ObjectShortName">[19]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[18]" type="logic">
+         <obj_property name="ElementShortName">[18]</obj_property>
+         <obj_property name="ObjectShortName">[18]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[17]" type="logic">
+         <obj_property name="ElementShortName">[17]</obj_property>
+         <obj_property name="ObjectShortName">[17]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[16]" type="logic">
+         <obj_property name="ElementShortName">[16]</obj_property>
+         <obj_property name="ObjectShortName">[16]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[15]" type="logic">
+         <obj_property name="ElementShortName">[15]</obj_property>
+         <obj_property name="ObjectShortName">[15]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[14]" type="logic">
+         <obj_property name="ElementShortName">[14]</obj_property>
+         <obj_property name="ObjectShortName">[14]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[13]" type="logic">
+         <obj_property name="ElementShortName">[13]</obj_property>
+         <obj_property name="ObjectShortName">[13]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[12]" type="logic">
+         <obj_property name="ElementShortName">[12]</obj_property>
+         <obj_property name="ObjectShortName">[12]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[11]" type="logic">
+         <obj_property name="ElementShortName">[11]</obj_property>
+         <obj_property name="ObjectShortName">[11]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fifo_16x20b_tb/do[10]" type="logic">
+         <obj_property name="ElementShortName">[10]</obj_property>
+         <obj_property name="ObjectShortName">[10]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/fifo_16x20b_tb/inf_loop" type="logic">
+      <obj_property name="ElementShortName">inf_loop</obj_property>
+      <obj_property name="ObjectShortName">inf_loop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_16x20b_tb/test_fifo_16x20b/cnt" type="other">
+      <obj_property name="ElementShortName">cnt</obj_property>
+      <obj_property name="ObjectShortName">cnt</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_16x20b_tb/cnt" type="other">
+      <obj_property name="ElementShortName">cnt</obj_property>
+      <obj_property name="ObjectShortName">cnt</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_16x20b_tb/CLK1_TO_CLK2_SKEW" type="other">
+      <obj_property name="ElementShortName">CLK1_TO_CLK2_SKEW</obj_property>
+      <obj_property name="ObjectShortName">CLK1_TO_CLK2_SKEW</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_16x20b_tb/clk_period" type="other">
+      <obj_property name="ElementShortName">clk_period</obj_property>
+      <obj_property name="ObjectShortName">clk_period</obj_property>
+   </wvobject>
+</wave_config>
