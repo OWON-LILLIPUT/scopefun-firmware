@@ -11,7 +11,7 @@ FX3 firmware handles:
 
 ## Getting started
 
-For comiling the FX3 firmware you must install the [FX3 SDK](http://www.cypress.com/documentation/software-and-drivers/ez-usb-fx3-software-development-kit) and import FX3fw project into the EZ USB Suite.
+For compiling the FX3 firmware you must install the [FX3 SDK](http://www.cypress.com/documentation/software-and-drivers/ez-usb-fx3-software-development-kit) and import FX3fw project into the EZ USB Suite.
 
 ## Licensing
 
