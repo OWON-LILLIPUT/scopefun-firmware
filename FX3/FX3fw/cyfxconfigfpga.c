@@ -82,8 +82,8 @@ CyU3PReturnStatus_t CyFxConfigFpga(uint32_t uiLen)
       apiRetStatus |= CyU3PSpiSetSsnLine (CyTrue);
       CyU3PThreadSleep(100);   // Allow FPGA to startup
       /* Check if FPGA is now ready by testing the FPGA_Init_B signal */
-    apiRetStatus |= CyU3PGpioSimpleGetValue (FPGA_INIT_B, &xFpga_Init_B);
-    if( (xFpga_Init_B != CyTrue) || (apiRetStatus != CY_U3P_SUCCESS) ){
+      apiRetStatus |= CyU3PGpioSimpleGetValue (FPGA_INIT_B, &xFpga_Init_B);
+      if( (xFpga_Init_B != CyTrue) || (apiRetStatus != CY_U3P_SUCCESS) ){
 
           return apiRetStatus;
     }
@@ -113,7 +113,7 @@ CyU3PReturnStatus_t CyFxConfigFpga(uint32_t uiLen)
             }
     }
 
-    CyU3PThreadSleep(1);
+    CyU3PThreadSleep(10);
 
     apiRetStatus |= CyU3PGpioSimpleGetValue (FPGA_DONE, &xFpga_Done);
     if( (xFpga_Done != CyTrue) ){
@@ -135,6 +135,8 @@ CyFxConfigFpgaApplnStart (
     CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
     CyU3PUSBSpeed_t usbSpeed = CyU3PUsbGetSpeed();
 
+
+    CyU3PDebugPrint (4, "CyFxConfigFpgaApplnStart...");
     /* First identify the usb speed. Once that is identified,
      * create a DMA channel and start the transfer on this. */
 
@@ -215,7 +217,6 @@ CyFxConfigFpgaApplnStart (
     /* Update the status flag. */
     glIsApplnActive = CyTrue;
 
-
 }
 
 
@@ -223,6 +224,8 @@ void
 CyFxConfigFpgaApplnStop(
 		void)
 {
+
+	CyU3PDebugPrint (4, "CyFxConfigFpgaApplnStop...\n\r");
 	//CyU3PEpConfig_t epCfg;
 	CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
 
@@ -242,9 +245,14 @@ CyFxConfigFpgaApplnStop(
     /* Flush the endpoint memory */
     CyU3PUsbFlushEp(P_DCONFIG_EP2OUT);
 
-
     /* Destroy the channel */
-    CyU3PDmaChannelDestroy (&glChHandleUtoCPU);
+    apiRetStatus = CyU3PDmaChannelDestroy (&glChHandleUtoCPU);
+    if (apiRetStatus != CY_U3P_SUCCESS)
+    {
+		CyU3PDebugPrint (4, "CyU3PDmaChannelDestroy failed, Error code = %d\n", apiRetStatus);
+		CyFxAppErrorHandler (apiRetStatus);
+	}
+
 #if 0
     /* Disable endpoints. */
 	CyU3PMemSet ((uint8_t *)&epCfg, 0, sizeof (epCfg));

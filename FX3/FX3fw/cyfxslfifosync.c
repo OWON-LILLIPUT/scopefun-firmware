@@ -45,7 +45,7 @@ CyU3PDmaChannel glChHandleSlFifoPtoU_EP6IN;   /* DMA Channel handle for P2U tran
 
 uint32_t glDMARxCount = 0;               /* Counter to track the number of buffers received from USB. */
 uint32_t glDMATxCount = 0;               /* Counter to track the number of buffers sent to USB. */
-volatile CyBool_t glIsApplnActive = CyFalse;    /* Whether the loopback application is active or not. */
+CyBool_t glIsApplnActive = CyFalse;     /* Whether the loopback application is active or not. */
 //uint8_t glEp0Buffer[32];                		/* Buffer used for sending EP0 data.    */
 uint8_t glEp0Buffer[4096] __attribute__ ((aligned (32)));
 /* Firmware ID variable that may be used to verify I2C firmware. */
@@ -468,7 +468,9 @@ void
 CyFxSlFifoApplnStop (
         void)
 {
-    CyU3PEpConfig_t epCfg;
+
+	CyU3PDebugPrint (4, "CyFxSlFifoApplnStop...\n");
+	CyU3PEpConfig_t epCfg;
     CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
 
     /* Update the flag. */
@@ -483,6 +485,7 @@ CyFxSlFifoApplnStop (
     CyU3PDmaChannelDestroy (&glChHandleSlFifoUtoP_EP4OUT);
     CyU3PDmaChannelDestroy (&glChHandleSlFifoUtoP_EP2OUT);
     CyU3PDmaChannelDestroy (&glChHandleSlFifoPtoU_EP6IN);
+    CyU3PDmaChannelDestroy (&glChHandleUtoCPU);
 
     /* Disable endpoints. */
     CyU3PMemSet ((uint8_t *)&epCfg, 0, sizeof (epCfg));
@@ -892,21 +895,28 @@ CyFxSlFifoApplnUSBEventCB (
     uint16_t            evdata
     )
 {
-    switch (evtype)
+	CyU3PDebugPrint (4, "CyFxSlFifoApplnUSBEventCB, event %d\n\r", evtype);
+	CyU3PDebugPrint (4, "CyFxSlFifoApplnUSBEventCB, glIsApplnActive %d\n\r", glIsApplnActive);
+	switch (evtype)
     {
-        case CY_U3P_USB_EVENT_SETCONF:
+    	case CY_U3P_USB_EVENT_SETCONF:
             /* Stop the application before re-starting. */
             if (glIsApplnActive)
             {
                 CyFxSlFifoApplnStop ();
-
+                CyU3PDebugPrint (4, "CY_U3P_USB_EVENT_SETCONF: Stopping CyFxSlFifoApp...\n\r");
             }
             CyU3PUsbLPMDisable();
             /* Start the loop back function. */
+            CyU3PDebugPrint (4, "CY_U3P_USB_EVENT_SETCONF: Starting CyFxConfigFpgaApplnstart...\n\r");
             CyFxConfigFpgaApplnStart();
+            CyU3PDebugPrint (4, "glIsApplnActive = %d\n\r", glIsApplnActive);
             break;
 
         case CY_U3P_USB_EVENT_RESET:
+        	CyU3PDebugPrint (4, "glIsApplnActive = %d\n\r", glIsApplnActive);
+        	break;
+
         case CY_U3P_USB_EVENT_DISCONNECT:
             /* Stop the loop back function. */
             if (glIsApplnActive)
@@ -916,6 +926,7 @@ CyFxSlFifoApplnUSBEventCB (
                 //CyU3PDmaChannelReset (&glI2cRxHandle);
                 CyFxSlFifoApplnStop ();
             }
+            CyU3PDebugPrint (4, "glIsApplnActive = %d\n\r", glIsApplnActive);
             break;
 
         default:
@@ -1114,7 +1125,7 @@ SlFifoAppThread_Entry (
 
     for (;;)
     {
-        /*CyU3PThreadSleep (1000);*/
+        CyU3PThreadSleep(10);
         if (glIsApplnActive)
         {
 

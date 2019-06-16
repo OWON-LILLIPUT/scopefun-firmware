@@ -54,7 +54,7 @@ extern uint32_t filelen;					/* length of Configuration file (.bin) */
 
 extern uint16_t uiPacketSize;
 
-extern volatile CyBool_t glIsApplnActive;
+extern CyBool_t glIsApplnActive;
 
 extern CyU3PEvent glFxConfigFpgaAppEvent;    /* Configure FPGA event group. */
 
