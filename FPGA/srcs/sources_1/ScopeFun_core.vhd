@@ -106,9 +106,11 @@ architecture rtl of fpga is
 	--define constants
 	
 	--max number of oscilloscope configuration registers
-    CONSTANT CONFIG_DATA_SIZE : integer := 32;    -- number of 32-bit Words used for scope config
-    CONSTANT FRAME_HEADER_SIZE : integer := 256;  -- number of 32-bit Words used for frame header
+    CONSTANT CONFIG_DATA_SIZE : integer := 32;    -- number of 32-bit Words for scope config
+    CONSTANT FRAME_HEADER_SIZE : integer := 256;  -- number of 32-bit Words for frame header
     CONSTANT DDR3_MAX_SAMPLES : integer := 2**27; -- 2^27 = 128M samples
+    CONSTANT AWG_MAX_SAMPLES : integer := 32768;  -- number of samples for AWG custom signal and dig. pattern generator
+    --CONSTANT AWG_MAX_SAMPLES : integer := 4096;
     --digital ch. interface width
     CONSTANT LA_DATA_WIDTH : INTEGER := 12;
     --USB buffers
@@ -116,6 +118,9 @@ architecture rtl of fpga is
     
     CONSTANT bH : INTEGER := 14;  -- sfixed high index
     CONSTANT bL : INTEGER := -17; -- sfixed low index
+   
+    CONSTANT DATA_DEPTH: integer := AWG_MAX_SAMPLES;
+    CONSTANT DATA_WIDTH: integer := 12;
     
     component adc_if is
     Port ( 
@@ -152,7 +157,8 @@ architecture rtl of fpga is
        DataOut : out STD_LOGIC_VECTOR (31 downto 0);
        DataOutEnable : in std_logic;
        DataOutValid : out STD_LOGIC;
-       reset_complete : out std_logic;
+       ReadingFrame : in std_logic;
+       ram_rdy : out std_logic;
        init_calib_complete : out STD_LOGIC;
        device_temp : out std_logic_vector(11 downto 0);
        -- DDR3 PHY
@@ -198,6 +204,10 @@ architecture rtl of fpga is
 --   end component;
 	 
 	component SDP_BRAM_custom_signal
+	  generic (
+          DATA_DEPTH : integer;
+          DATA_WIDTH : integer 
+       );
 	   port (
 	      clka: IN std_logic;
 			wea: IN std_logic;
@@ -480,6 +490,7 @@ signal requestFrame_dd : std_logic;
 signal frame_ready_to_send : std_logic;
 signal frame_ready_to_send_d : std_logic;
 signal sendingFrameSlow : std_logic;
+signal ReadingFrame : std_logic:= '0';
 signal roll : std_logic;
 signal roll_d : std_logic;
 signal ScopeConfigChanged : std_logic;
@@ -815,6 +826,7 @@ signal PreTrigWriteEn_d : std_logic;
 signal PreTrigLen : std_logic_vector (26 downto 0);
 signal DataOut : std_logic_vector(31 downto 0);
 signal DataOutEnable : std_logic;
+signal DataOutEnable_cnt : integer range 0 to 15;
 signal DataOutValid : std_logic;
 signal init_calib_complete : std_logic;
 signal init_calib_complete_d : std_logic;
@@ -824,7 +836,7 @@ signal read_calib_source : std_logic := '0';  -- '0' calibrate CH1, '1' calibrat
 signal device_temp : std_logic_vector(11 downto 0);
 signal device_temp_d : std_logic_vector(11 downto 0);
 signal device_temp_dd : std_logic_vector(11 downto 0);
-signal reset_complete : std_logic;
+signal ram_rdy : std_logic;
 
 -- attribute strings
 attribute KEEP: boolean;
@@ -835,6 +847,7 @@ attribute mark_debug: boolean;
 attribute KEEP of an_trig_d: signal is true;
 attribute KEEP of DebugMState: signal is true;
 attribute KEEP of DebugADCState: signal is true;
+attribute KEEP of DebugADCState_d: signal is true;
 attribute ASYNC_REG of DebugADCState_d: signal is true;
 attribute KEEP of newFrameRequestRevcd: signal is true;
 attribute KEEP of slwr_assert_cnt: signal is true;
@@ -1000,7 +1013,7 @@ port map (
        rst => clearflags,
        FrameSize => framesize_dd,
        DataIn => std_logic_vector(dataAd) & std_logic_vector(dataBd) & dataDd(11 downto 0),
-       --DataIn => std_logic_vector(to_unsigned(saved_sample_cnt_d,32)),
+       --DataIn => std_logic_vector(to_unsigned(saved_sample_cnt_d,32)), --* debug!
 --       DataIn =>   std_logic_vector(DataInTest (9 downto 0))
 --                 & std_logic_vector(DataInTest (9 downto 0))
 --                 & std_logic_vector(DataInTest(11 downto 0)),
@@ -1012,7 +1025,8 @@ port map (
        DataOut => DataOut,
        DataOutEnable => DataOutEnable,
        DataOutValid => DataOutValid,
-       reset_complete => reset_complete,
+       ReadingFrame => ReadingFrame,
+       ram_rdy => ram_rdy,
        init_calib_complete => init_calib_complete,
        device_temp => device_temp,
        ddr3_dq      => ddr3_dq,    
@@ -1054,6 +1068,7 @@ config_RAM: SDP_RAM_64x32b
 	);
 
 awg_custom_signal: SDP_BRAM_custom_signal
+    generic map (DATA_DEPTH => AWG_MAX_SAMPLES, DATA_WIDTH => 12)
 	port map (
 		clka => ifclk, -- RAM write clk
 		wea => wea_awg,
@@ -1064,6 +1079,7 @@ awg_custom_signal: SDP_BRAM_custom_signal
 		doutb => doutb_awg);
 		
 awg2_custom_signal: SDP_BRAM_custom_signal
+    generic map (DATA_DEPTH => AWG_MAX_SAMPLES, DATA_WIDTH => 12)
 	port map (
 		clka => ifclk, -- RAM write clk
 		wea => wea_awg2,
@@ -1074,6 +1090,7 @@ awg2_custom_signal: SDP_BRAM_custom_signal
 		doutb => doutb_awg2);
 
 dig_custom_signal: SDP_BRAM_custom_signal
+    generic map (DATA_DEPTH => AWG_MAX_SAMPLES, DATA_WIDTH => 12)
 	port map (
 		clka => ifclk, -- RAM write clk
 		wea => wea_dig,
@@ -1363,8 +1380,8 @@ begin
 			digitalClkDivide_cnt <= digitalClkDivide_cnt + 1;			
 		end if;
 		if digitalClkDivide_cnt = to_unsigned(0,32) then
-            if ( addrb_dig = std_logic_vector(to_unsigned(4095,12)) ) then
-                addrb_dig <= "000000000000";
+            if ( addrb_dig = std_logic_vector(to_unsigned(AWG_MAX_SAMPLES-1,15)) ) then
+                addrb_dig <= "000000000000000";
             else
                 addrb_dig <= std_logic_vector(unsigned(addrb_dig) + 1);
             end if;
@@ -1602,7 +1619,7 @@ begin
 				triggered_led <= '0';
 				dt_enable <= '0';
 				
-				if ( getNewFrame = '1' AND clearflags_d = '0') then
+				if ( getNewFrame = '1' AND clearflags_d = '0' and ram_rdy = '1' ) then
 					PreTrigSaving <= '1';
 				    PreTrigWriteEn <= '1';
 					framesize_d <= framesize;     -- save current frame size
@@ -1628,13 +1645,11 @@ begin
 				--post_trigger <= unsigned(framesize_d) - pre_trigger_d + 1;
 				
 				if ( clearflags_d = '1' ) then
-				    --PreTrigWriteEn <= '0';
 					GetSampleState <= ADC_A;
 					pre_trigger_cnt <= to_unsigned(0,pre_trigger_cnt'length);
 				-- if sample buffer is filled with pre-trigger data (note: max. pre-trigger_cnt = framesize)
 				elsif ( pre_trigger_cnt = unsigned(pre_trigger_d)) then
 					-- update saved_sample_cnt, reset pre_trigger_cnt and continue to next state
-					--PreTrigWriteEn <= '1';
 					pre_trigger_cnt <= to_unsigned(0,pre_trigger_cnt'length);
 					saved_sample_cnt <= to_integer(unsigned(pre_trigger_d));
 					-- if immediate trigger (roll mode)
@@ -1649,7 +1664,6 @@ begin
 					end if;
 				-- else, keep saving pre-trigger data
 				else
-				    --PreTrigWriteEn <= '1';
 					pre_trigger_cnt <= pre_trigger_cnt + 1;
 					GetSampleState <= ADC_B;
 				end if;
@@ -1742,9 +1756,9 @@ begin
                             an_trig_delay <= std_logic_vector(to_unsigned(3,6));
                         when "00000000000000000000000000000011" =>
                             an_trig_delay <= std_logic_vector(to_unsigned(2,6));
-                        when "0000000000000000000000000000001" =>
+                        when "00000000000000000000000000000001" =>
                             an_trig_delay <= std_logic_vector(to_unsigned(1,6));
-                        when "0000000000000000000000000000000" =>
+                        when "00000000000000000000000000000000" =>
                             an_trig_delay <= std_logic_vector(to_unsigned(0,6));
                         when others => Null;
 					end case;
@@ -1872,7 +1886,6 @@ begin
 				if ( clearflags_d = '1' ) then
 					t_start <= '0'; --reset holdoff timer start bit
 					DataWriteEn <= '0';    --enable signal for DDR write
-					PreTrigWriteEn <= '0';
 					triggered <= '0';
 					cnt_rst_triggered <= 0;
 					GetSampleState <= ADC_A;
@@ -1883,7 +1896,6 @@ begin
 					triggered <= '0';
 					cnt_rst_triggered <= 0;
 					DataWriteEn <= '0';
-					PreTrigWriteEn <= '0';
 					roll <= '0';
 					GetSampleState <= ADC_F;
 				else
@@ -2391,6 +2403,7 @@ begin
 			
 		when F =>						-- "WAIT FOR NEW FRAME READY"
 			clearflags <= '0';
+			ReadingFrame <= '0';
 --			requestFrame <= '0';
 			-- start sending to FX3 when frame was triggered
 			if ( frame_ready_to_send = '1' ) then
@@ -2433,15 +2446,15 @@ begin
 			--sloe_i <= '1';
 			slrd_i <= '1';
 			faddr_i <= "00";  -- 00 -- select EP6
+			ReadingFrame <= '1';
 --			frame_ready_to_send <= '0'; 	-- reset frame_ready_to_send flag
---			sendingFrame <= '1';
 			-- select flagd/flagb IN EP buffer
 			
 			-- flaga/flagb interrupt: read scope config if sent from host
 			-- ONLY if there are no samples waiting to be read from RAM and if multiple of 4 samples were sent to FX3
 			--if (flaga_d = '1' or flagb_d = '1') and slwr_assert = '0' then
-			if (flaga_d = '1' OR flagb_d = '1') AND DataOutValid = '0' AND (dword_cnt_i rem 4) = 0 then
-			    -- disable reading samples from RAM 
+			if (flaga_d = '1' OR flagb_d = '1') AND DataOutValid = '0' AND (dword_cnt_i = 0) then
+			    -- disable reading samples from RAM
 			    DataOutEnable <= '0';
 			    slwr_i <= '1';
 			    -- wait for 7 clk cycles to confirm there is no data waiting to be read from RAM 
@@ -2583,7 +2596,13 @@ begin
 				end if;
 			-- FX3 can accept data and samples still need to be sent and header was already sent
 		    elsif slwr_assert = '1' and (send_sample_cnt < to_integer(unsigned(framesize_dd))) and hword_cnt_i = FRAME_HEADER_SIZE then
-		        DataOutEnable <= '1';
+--		        if DataOutEnable_cnt = 15 then
+--		            DataOutEnable_cnt <= 0;
+		            DataOutEnable <= '1';
+--		        else
+--		            DataOutEnable_cnt <= DataOutEnable_cnt + 1;
+--		            DataOutEnable <= '0';
+--		        end if;
 		        slwr_i  <= '1';
                 Masterstate <= G;
 			else	-- else, WAIT UNTIL FIFO IS EMPTY
@@ -2622,7 +2641,7 @@ begin
                 case BufferSel is
                     when "00" =>
                     
-                        if accumulate_addra_awg = '1' and addra_awg < std_logic_vector(to_unsigned(32767,12)) then
+                        if accumulate_addra_awg = '1' and addra_awg < std_logic_vector(to_unsigned(AWG_MAX_SAMPLES-1,15)) then
                             addra_awg <= std_logic_vector(unsigned(addra_awg) + 1);
                         end if;
                         if slrd_rdy_cnt = 3 then
@@ -2666,7 +2685,7 @@ begin
                         
                     when "01" =>
                     
-                        if accumulate_addra_awg = '1' and addra_awg2 < std_logic_vector(to_unsigned(32767,12)) then
+                        if accumulate_addra_awg = '1' and addra_awg2 < std_logic_vector(to_unsigned(AWG_MAX_SAMPLES-1,15)) then
                         addra_awg2 <= std_logic_vector(unsigned(addra_awg2) + 1);
                         end if;
                         if slrd_rdy_cnt = 3 then
@@ -2710,7 +2729,7 @@ begin
                     
                     when "10" =>
                     
-                        if accumulate_addra_awg = '1' and addra_dig < std_logic_vector(to_unsigned(32767,12)) then
+                        if accumulate_addra_awg = '1' and addra_dig < std_logic_vector(to_unsigned(AWG_MAX_SAMPLES-1,15)) then
                             addra_dig <= std_logic_vector(unsigned(addra_dig) + 1);
                         end if;
                         if slrd_rdy_cnt = 3 then
@@ -2764,16 +2783,16 @@ begin
                 wea_awg2 <= '0';
                 accumulate_addra_awg <= '0'; -- re-set counter flag
                 -- if awg buffer is full
-                if addra_awg = std_logic_vector(to_unsigned(4095,12)) then
-                    addra_awg <= std_logic_vector(to_unsigned(0,12));
+                if addra_awg = std_logic_vector(to_unsigned(AWG_MAX_SAMPLES-1,15)) then
+                    addra_awg <= std_logic_vector(to_unsigned(0,15));
                     BufferSel <= "01"; -- switch to AWG_2 buffer
                     Masterstate <= B;
-                elsif addra_awg2 = std_logic_vector(to_unsigned(4095,12)) then
-                    addra_awg2 <= std_logic_vector(to_unsigned(0,12));
+                elsif addra_awg2 = std_logic_vector(to_unsigned(AWG_MAX_SAMPLES-1,15)) then
+                    addra_awg2 <= std_logic_vector(to_unsigned(0,15));
                     BufferSel <= "10"; -- switch to dig. pattern buffer
                     Masterstate <= B;
-                elsif addra_dig = std_logic_vector(to_unsigned(4095,12)) then
-                    addra_dig <= std_logic_vector(to_unsigned(0,12));
+                elsif addra_dig = std_logic_vector(to_unsigned(AWG_MAX_SAMPLES-1,15)) then
+                    addra_dig <= std_logic_vector(to_unsigned(0,15));
                     BufferSel <= "00"; -- reset buffer select
                     faddr_rdy <= '0';
                     Masterstate <= B; -- back to dispatcher

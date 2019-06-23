@@ -41,12 +41,12 @@ entity ddr3_simple_ui is
             ui_reset : in std_logic;
             ui_wr_framesize : in std_logic_vector (26 downto 0);
             ui_wr_pretriglenth : in std_logic_vector (26 downto 0); -- pre-trigger length
-            --ui_PreTrigSavingCntRecvd : in std_logic;
+            ui_PreTrigSavingCntRecvd : in std_logic;
             ui_wr_preTrigSavingCnt : in std_logic_vector (26 downto 0); -- number of saved samples before trigger
             ui_wr_data_waiting : in std_logic; -- there is data waiting to be written
             ui_wr_rdy : out std_logic;         -- ready to receive write requests
             ui_frameStart : in std_logic;      -- new frame has started saving into write fifo
-            ui_rd_start : in std_logic;        -- start reading samples
+            ui_rd_ready : in std_logic;        -- start reading samples
             ui_rd_data_valid : out std_logic;
             ui_rd_data_available : out std_logic; -- asserted if write counter is higher than read counter
             init_calib_complete : out std_logic;
@@ -168,7 +168,7 @@ signal ui_wr_data_d : std_logic_vector (127 downto 0);
 signal ui_wr_data_dd : std_logic_vector (127 downto 0);
 signal wr_start : std_logic := '0';
 signal rd_cnt : integer range 0 to RAM_SIZE-1 := 0;
-signal ui_rd_start_d : std_logic := '0';
+signal ui_rd_ready_d : std_logic := '0';
 signal rd_start : std_logic := '0';
 signal wr_pretriglen : integer range 0 to (2**27)-1;
 signal wr_pretrigsaved : integer range 0 to (2**27)-1;
@@ -189,7 +189,9 @@ signal ui_rd_last_sample_i : std_logic := '0';
 signal ui_wr_rdy_i : std_logic := '0';
 signal rd_cnt_ini : std_logic := '0';
 signal wr_pretrigdsc : unsigned(26 downto 0);
-signal wr_framesize : unsigned(27 downto 0);
+signal wr_framesize : unsigned(26 downto 0);
+signal wr_PreTrigSavingCntRecvd : std_logic := '0';
+
 
 --debug signals
 signal debugDDRst : integer range 0 to 4;
@@ -290,17 +292,23 @@ begin
         if ui_clk_sync_rst = '0' then
             
             -- pre-trigger length (selected in GUI)
+            -- this is the minimum number of samples to be saved in RAM before we can start waiting for trigger event
             wr_pretriglen <= to_integer(unsigned(ui_wr_pretriglenth));
-            -- number of samples that were saved in ram before trigger event
+            -- number of samples that were actually saved in ram before trigger event
             wr_pretrigsaved <= to_integer(unsigned(ui_wr_preTrigSavingCnt));
+            if ui_PreTrigSavingCntRecvd = '1' then
+                wr_PreTrigSavingCntRecvd <= '1';
+            elsif rd_cnt_ini = '1' then
+                wr_PreTrigSavingCntRecvd <= '0';
+            end if;
             wr_pretrigdsc <= to_unsigned(wr_pretrigsaved-wr_pretriglen,wr_pretrigdsc'length);
-            wr_framesize <= unsigned('0' & ui_wr_framesize)+1;
+            wr_framesize <= unsigned(ui_wr_framesize);
             
             --check for write request
             ui_wr_data_waiting_d <= ui_wr_data_waiting;
             
             --check for read request
-            ui_rd_start_d <= ui_rd_start;
+            ui_rd_ready_d <= ui_rd_ready;
             
             -- if controller is ready to read data       
             ui_rd_data_valid <= app_rd_data_valid_i; -- read fifo write enable
@@ -328,7 +336,11 @@ begin
                         if rd_cnt = wr_cnt then
                             ui_rd_data_available <= '0';
                         else
-                            ui_rd_data_available <= '1';
+                            if rd_cnt_ini = '1' then
+                                ui_rd_data_available <= '1';
+                            else
+                                ui_rd_data_available <= '0';
+                            end if;
                         end if;
                         
                         if ui_wr_data_waiting = '1' then
@@ -336,17 +348,18 @@ begin
                             ui_wr_rdy_i <= '0';
                             app_cmd <= "000";
                             RAMstate <= B;
-                        -- initialize read address and set write counter to account for pre-trigger data
-                        elsif ui_rd_start_d = '1' and rd_cnt_ini = '0' then
-                            -- if RAM already has more data than pre-trigger length
-                            if shift_right(app_addr_i_wr,3) > shift_right(wr_pretrigdsc,2) then
+                        -- initialize read address and write counter to account for pre-trigger data
+                        elsif wr_PreTrigSavingCntRecvd = '1' and rd_cnt_ini = '0' then
+                            -- if current RAM write address is greater than pre-trigger count *2
+                            -- then all pre-trigger data is saved in RAM
+                            if shift_right(app_addr_i_wr,3) > shift_right(unsigned(ui_wr_preTrigSavingCnt),2) then
                                 rd_cnt_ini <= '1';
                                 -- set RAM read start address
                                 app_addr_i_rd <= wr_pretrigdsc(26 downto 0) & '0'; -- mulitply by 2
                                 -- set write counter, relative to the read counter
                                 wr_cnt <= to_integer(shift_right(app_addr_i_wr,3) - shift_right(wr_pretrigdsc,2));
                             end if;
-                        elsif ui_rd_start_d = '1' and rd_cnt_ini = '1' and (rd_cnt < wr_cnt) then
+                        elsif rd_cnt_ini = '1' and ui_rd_ready_d = '1' and (rd_cnt < wr_cnt) then
                             ui_wr_rdy_i <= '0';
                             app_addr <= '0' & std_logic_vector(app_addr_i_rd(27 downto 3) & "000");
                             app_cmd <= "001";
@@ -457,10 +470,9 @@ begin
                         app_addr_i_rd <= to_unsigned(0,app_addr_i_rd'length);
                         RAMstate <= A;
                     else
-                        -- stay in this state if read is still requested
-                        -- until rd_cnt < wr_cnt-1
-                        --if ui_rd_start_d = '1' and rd_cnt < wr_cnt-1 AND rd_cnt < to_integer(wr_framesize/4)-1 then
-                        if ui_rd_start_d = '1' and rd_cnt < wr_cnt-1 then                        
+                        -- stay in this state if read read fifo not AlmostFull (ui_rd_ready_d = '1')
+                        -- and rd_cnt < wr_cnt-1
+                        if ui_rd_ready_d = '1' and rd_cnt < wr_cnt-1 then                        
                             app_en <= '1';
                             -- if controller is ready to receive READ command                        
                             if app_rdy = '1' and app_en = '1' then
@@ -495,7 +507,6 @@ begin
                                 -- do not increment read pointer
                             else
                                 -- if reading last sample, but app_en=0 (read samples one-by-one)
-                                --if rd_cnt = wr_cnt-1 OR rd_cnt = to_integer(wr_framesize/4)-1 then
                                 if rd_cnt = wr_cnt-1 then
                                     app_en <= '1';
                                     RAMstate <= C;

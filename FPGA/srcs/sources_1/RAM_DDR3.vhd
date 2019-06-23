@@ -45,7 +45,8 @@ Port (
     DataOut : out STD_LOGIC_VECTOR (31 downto 0);
     DataOutEnable : in std_logic;
     DataOutValid : out STD_LOGIC;
-    reset_complete : out std_logic;
+    ReadingFrame : in std_logic;
+    ram_rdy : out std_logic;
     init_calib_complete : out STD_LOGIC;
     device_temp : out std_logic_vector(11 downto 0);
     -- DDR3 PHY
@@ -94,8 +95,7 @@ architecture Behavioral of RAM_DDR3 is
           Empty       : out STD_LOGIC;
           AlmostEmpty : out STD_LOGIC;
           Full        : out STD_LOGIC;
-          AlmostFull  : out STD_LOGIC;
-          reset_complete : out STD_LOGIC
+          AlmostFull  : out STD_LOGIC
 		);
 	end component;
 
@@ -131,12 +131,12 @@ architecture Behavioral of RAM_DDR3 is
         ui_reset : in std_logic;
         ui_wr_framesize : in std_logic_vector (26 downto 0);    -- length of frame
         ui_wr_pretriglenth : in std_logic_vector (26 downto 0); -- pre-trigger length
-        --ui_PreTrigSavingCntRecvd : in std_logic;
+        ui_PreTrigSavingCntRecvd : in std_logic;
         ui_wr_preTrigSavingCnt : in std_logic_vector (26 downto 0); -- number of saved samples before trigger
         ui_wr_rdy : out std_logic;         -- ready to receive write requests
         ui_wr_data_waiting : in std_logic; -- flag: data is waiting to be written in RAM
         ui_frameStart : in std_logic;      -- new frame has started saving into write fifo
-        ui_rd_start : in std_logic;        -- read data from RAM
+        ui_rd_ready : in std_logic;        -- read data from RAM
         ui_rd_data_valid : out std_logic;
         ui_rd_data_available : out std_logic; -- asserted if write counter is higher than read counter
         init_calib_complete : out std_logic;
@@ -173,7 +173,6 @@ architecture Behavioral of RAM_DDR3 is
     signal fwr_Full        : std_logic;
     signal fwr_AlmostEmpty    : std_logic;
     signal fwr_AlmostFull   : std_logic;
-    signal fwr_reset_complete : std_logic;
     
     -- internal
     signal fwr_AlmostFull_d : std_logic := '0';
@@ -202,14 +201,13 @@ architecture Behavioral of RAM_DDR3 is
     signal frd_AlmostEmpty_d : std_logic := '0';
     signal frd_AlmostFull_d : std_logic := '0';
     signal fwr_ReadEn_i : std_logic := '0';
-    signal frd_Empty_d : std_logic := '1';
     signal frd_Empty_asserted : std_logic := '0';
     
 	signal ui_clk_i : std_logic;
 	signal ui_wr_data : std_logic_vector (127 downto 0) := std_logic_vector(to_unsigned(0,128));
 	-- max sample count 2^27 = 134 Mega samples
 	signal ui_wr_pretriglenth : std_logic_vector (26 downto 0) := std_logic_vector(to_unsigned(0,27));
-	signal ui_rd_start : std_logic :='0'; -- start reading samples
+	signal ui_rd_ready : std_logic :='0'; -- start reading samples
 	signal ui_wr_data_waiting : std_logic := '0';
     signal ui_wr_data_waiting_i : std_logic := '0';
 	signal ui_rd_data : std_logic_vector (127 downto 0);
@@ -227,8 +225,9 @@ architecture Behavioral of RAM_DDR3 is
     signal PreTrigSaving_ddd : std_logic := '0';    
     signal PreTrigSaving_i : std_logic := '0';
     signal ui_frameStart : std_logic := '0';
+    signal ram_rdy_i : std_logic := '0';
     signal DebugRAMState : integer range 0 to 3;
-    
+
     signal PreTrigSavingCnt : integer range 0 to DDR3_MAX_SAMPLES-1 := 0;
     signal PreTrigSavingCnt_d : std_logic_vector (26 downto 0);
     signal PreTrigSavingCnt_dd : std_logic_vector (26 downto 0);   
@@ -238,6 +237,7 @@ architecture Behavioral of RAM_DDR3 is
     signal PreTrigSavingCntRecvd_d : std_logic := '0';
     signal PreTrigSavingCntRecvd_dd : std_logic := '0';    
     signal PreTrigSavingCntReset : std_logic := '0';
+    signal ui_PreTrigSavingCntRecvd : std_logic := '0';
     signal FrameSaveEnd_d : std_logic := '0';   
     signal FrameSaveEnd_dd : std_logic := '0';
     signal wr_FifoFill : std_logic := '0';
@@ -245,6 +245,7 @@ architecture Behavioral of RAM_DDR3 is
     signal FillFifoCnt : integer range 0 to 3 := 0;
     signal PostFrameSave : std_logic := '0';
     signal rst_d : std_logic := '0';
+    signal frd_data_cnt : unsigned(26 downto 0);
     
 -- attribute strings
 attribute KEEP: boolean;
@@ -280,6 +281,8 @@ attribute ASYNC_REG of fwr_Empty_d: signal is true;
 attribute ASYNC_REG of FrameSaveEnd_d: signal is true;
 attribute KEEP of rst_d: signal is true;
 attribute ASYNC_REG of rst_d: signal is true;
+attribute KEEP of ram_rdy: signal is true;
+attribute ASYNC_REG of ram_rdy: signal is true;
 
 attribute mark_debug: boolean;
 attribute mark_debug of DebugRAMState : signal is true;
@@ -297,7 +300,7 @@ attribute mark_debug of frd_DataOut : signal is true;
 attribute keep of ui_frameStart: signal is true;
 attribute mark_debug of ui_frameStart : signal is true;
 attribute mark_debug of PreTrigSaving_d: signal is true;
-attribute mark_debug of ui_rd_start: signal is true;
+attribute mark_debug of ui_rd_ready: signal is true;
 attribute mark_debug of ui_wr_data_waiting_i: signal is true;
 attribute mark_debug of PreTrigSavingCnt_d: signal is true;
 
@@ -310,12 +313,15 @@ attribute mark_debug of FillFifoCnt           : signal is true;
 attribute mark_debug of PostFrameSave         : signal is true;
 attribute mark_debug of PreTrigSavingCntMod_d : signal is true;
 
+attribute keep of frd_data_cnt : signal is true;
+attribute mark_debug of frd_data_cnt : signal is true;
+
 begin
 
 RAM_WRITE_FIFO: fifo_32_to_128 PORT MAP (
 	clk_wr		 => sys_clk_i,
 	clk_rd       => ui_clk_i,
-	RST		     => rst,
+	RST		     => rst_d,
 	DataIn	     => fwr_DataIn,
 	WriteEn	     => fwr_WriteEn,
 	ReadEn	     => fwr_ReadEn,
@@ -323,8 +329,7 @@ RAM_WRITE_FIFO: fifo_32_to_128 PORT MAP (
 	Full	     => fwr_Full,
 	Empty	     => fwr_Empty,
 	AlmostEmpty  => fwr_AlmostEmpty,
-	AlmostFull   => fwr_AlmostFull,
-	reset_complete => fwr_reset_complete
+	AlmostFull   => fwr_AlmostFull
 	);
 	
 RAM_READ_FIFO: fifo_128_to_32 PORT MAP (
@@ -352,11 +357,11 @@ RAM: ddr3_simple_ui PORT MAP (
 	ui_wr_framesize     => FrameSize,
 	ui_frameStart       => ui_frameStart,
 	ui_wr_pretriglenth  => PreTrigLen,
-	--ui_PreTrigSavingCntRecvd => PreTrigSavingCntRecvd,
+	ui_PreTrigSavingCntRecvd => PreTrigSavingCntRecvd,
 	ui_wr_preTrigSavingCnt => PreTrigSavingCnt_dd,
 	ui_wr_rdy           => ui_wr_rdy,
 	ui_wr_data_waiting  => ui_wr_data_waiting,
-	ui_rd_start         => ui_rd_start,
+	ui_rd_ready         => ui_rd_ready,
 	ui_rd_data_valid    => ui_rd_data_valid_i,
 	ui_rd_data_available   => ui_rd_data_available,
 	init_calib_complete => init_calib_complete_i,
@@ -397,6 +402,8 @@ begin
     if rising_edge (sys_clk_i) then
             
         rst_d <= rst;
+        ram_rdy <= ram_rdy_i; 
+        
         if rst_d = '1' then
             PreTrigSavingCntReset <= '0';
             PreTrigSavingCnt <= 0;
@@ -414,10 +421,12 @@ begin
             end if;
             
             -- if start of pre-trigger saving
+            -- asserted every time a pre-trigger sample is saved in write fifo
             if PreTrigWriteEn = '1' then
+                -- count number of pre-trigger samples
                 PreTrigSavingCnt <= PreTrigSavingCnt + 1;
             -- if end of pre-trigger saving
-            -- determine first sample location within the start RAM address (single RAM location holds 4 samples)
+            -- determine first sample position (offset: 0 to 3) within the first RAM address (single RAM location holds 4 samples)
             elsif PreTrigSavingCntReset = '1' then
                 PreTrigSavingCnt <= 0;
                 PreTrigSavingCntMod <= PreTrigSavingCnt mod 4;
@@ -428,7 +437,7 @@ begin
             if FrameSaveEnd_dd = '0' and FrameSaveEnd_d = '1' then
                 wr_FifoFill <= '1';
             end if;
-            -- continue saving to fifo if number of saved samples are not multiple of 4
+            -- continue saving to write fifo if number of saved samples are not multiple of 4
             if wr_FifoFill = '1' and PreTrigSavingCntMod /= 0 then
                 if FillFifoCnt = 4 - PreTrigSavingCntMod then
                     wr_FifoFill <= '0';
@@ -454,6 +463,11 @@ begin
     if rising_edge (ui_clk_i) then
               
         DataOut <= frd_DataOut;
+        if ui_rd_data_valid_i = '1' then
+            --count how many samples were transfered to rd_fifo
+            frd_data_cnt <= frd_data_cnt + 1;
+        end if;
+        
         -- enable read out of samples from RAM
         -- assert data valid according to the fisrt sample location within RAM address 
         if frd_DataOutValid = '1' then
@@ -475,6 +489,9 @@ begin
             PreTrigSaving_ddd <= PreTrigSaving_dd;
             if PreTrigSaving_dd = '0' and PreTrigSaving_d = '1' then
                 ui_frameStart <= '1';
+                -- reset rd_fifo write counter before starting new frame save
+                frd_data_cnt <= to_unsigned(0,27);
+                -- reset rd_fifo
             else
                 ui_frameStart <= '0';
             end if;
@@ -496,13 +513,54 @@ begin
             fwr_Empty_d <= fwr_Empty;
             
             frd_AlmostFull_d <= frd_AlmostFull;
+            
             frd_AlmostEmpty_d <= frd_AlmostEmpty;
                        
-            -- read enable
-            if DataOutEnable = '1' and frd_Empty = '0' then
-                frd_ReadEn <= '1';
+            -- if read data is requested assert read fifo ReadEn
+            if DataOutEnable = '1' then
+                -- if read fifo is almost full, start reading data from it
+                if frd_AlmostFull_d = '1' then
+                    frd_ReadEn <= '1';
+                -- if read fifo is empty, stop reading data from it
+                elsif frd_Empty = '1' then
+                    frd_ReadEn <= '0';
+                -- if all samples have been read out of RAM
+                elsif frd_data_cnt >= unsigned(FrameSize)/4 then
+                    -- keep frd_ReadEn asserted to empty out read fifo
+                    frd_ReadEn <= '1';
+                end if;
             else
-                frd_ReadEn <= '0';
+                -- read is not requested and complete frame was transfered
+                -- but read fifo is still not empty
+                -- this can happen if more samples were saved in RAM than framesize
+                --if DataOutEnable = '0' and ReadingFrame = '0' and frd_Empty = '0' then
+                if ReadingFrame = '0' and frd_data_cnt >= unsigned(FrameSize)/4 and frd_Empty = '0'then
+                    -- assert read enable to read redundant samples from read fifo
+                    frd_ReadEn <= '1';
+                else
+                    frd_ReadEn <= '0';
+                end if;
+            end if;
+            
+            
+--            if DataOutEnable = '1' and frd_Empty = '0' then
+--                frd_ReadEn <= '1';
+--            else
+--                -- if complete frame was sent to FX3, but read fifo is still not empty
+--                if ReadingFrame = '0' and DataOutEnable = '0' and frd_Empty = '0' then
+--                    -- assert read enable to read redundant samples from read fifo
+--                    frd_ReadEn <= '1';
+--                else
+--                    frd_ReadEn <= '0';
+--                end if;
+--            end if;
+            
+            -- if frame reading is finished and read fifo is empty
+            if ReadingFrame = '0' and frd_Empty = '1' then
+                -- assert ram_rdy signal to allow start of new frame saving
+                ram_rdy_i <= '1';
+            else
+                ram_rdy_i <= '0';
             end if;
             
             case RAMstate(2 downto 0) is
@@ -510,7 +568,7 @@ begin
                 when A =>
                 
                     -- if there is incoming data 
-                    if fwr_Empty = '0' then
+                    if fwr_Empty_d = '0' then
                         RAMstate <= B;
                     elsif ui_rd_data_available = '1' then
                         RAMstate <= D;
@@ -526,12 +584,12 @@ begin
                         RAMstate <= A;
                         ui_wr_data_waiting_i <= '0';
                     else
-                        if PreTrigSaving_dd = '1' then
-                            -- if write fifo is almost full
-                            if fwr_AlmostFull_d = '1' then
-                                -- transfer data from write fifo into RAM
+                        if PreTrigSaving_ddd = '1' then
+                            -- if write fifo is almost empty
+                            if fwr_AlmostFull_dd = '1' then
                                 ui_wr_data_waiting_i <= '1';
-                            else
+                            elsif fwr_AlmostEmpty_dd = '1' then
+                                -- transfer data from write fifo into RAM
                                 ui_wr_data_waiting_i <= '0';
                             end if;
                             RAMstate <= B;
@@ -563,23 +621,24 @@ begin
                 when D => -- READING from RAM
                     
                     if rst = '1' then
-                        ui_rd_start <= '0';
+                        ui_rd_ready <= '0';
                         ui_wr_data_waiting_i <= '0';
                         fwr_cnt <= 0;
                         RAMstate <= A;
                     else
-                        -- cehck if there is data waiting to be saved into RAM
+                        -- if read fifo is NOT AlmostFull
                         if fwr_AlmostFull_dd = '0' then
-                            -- if read fifo is NOT AlmostFull
-                            -- and there is data in RAM
-                            if frd_AlmostFull_d = '0' and ui_rd_data_available = '1' then
---                            if frd_AlmostFull_d = '0' then
-                                -- then transfer data from RAM into read fifo
-                                ui_rd_start <= '1';
+                            -- we can now start reading data from RAM
+                            -- if read fifo is not full and there is some data in RAM
+                            if ui_rd_data_available = '1' then
+                                -- transfering data from RAM into read fifo
+                                -- read fifo write enable
+                                ui_rd_ready <= NOT(frd_AlmostFull_d);
                                 RAMstate <= D;
+                            -- else: no more data is saved in RAM
                             else
-                                ui_rd_start <= '0';
-                                -- if write fifo has some data (but not almost full)
+                                ui_rd_ready <= '0';
+                                -- if write fifo has some data (when write fifo is NOT AlmostFull)
                                 -- then transfer one word at a time from write fifo to RAM
                                 if fwr_Empty = '0' then
                                     if fwr_cnt = 7 then
@@ -605,7 +664,7 @@ begin
                             end if;
                         else
                             -- save some data first
-                            ui_rd_start <= '0';
+                            ui_rd_ready <= '0';
                             RAMstate <= C;
                         end if;
                     end if;

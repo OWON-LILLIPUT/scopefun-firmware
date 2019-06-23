@@ -45,8 +45,7 @@ entity fifo_32_to_128 is
 		Empty	: out STD_LOGIC;
 		AlmostEmpty : out STD_LOGIC;
 		Full	: out STD_LOGIC;
-		AlmostFull : out STD_LOGIC;
-		reset_complete : out STD_LOGIC
+		AlmostFull : out STD_LOGIC
 	);
 end fifo_32_to_128;
 
@@ -194,7 +193,6 @@ fifo_proc: process (clk_wr)
 	begin
 		if rising_edge(clk_wr) then
 		
-            reset_complete <= NOT(reset);
     	    --RST must be held high for at least five WRCLK/RDCLK clock cycles
             -- and WREN/RDCLK must be low before RST becomes active high
             -- and WREN/RDCLK remains low during this reset cycle

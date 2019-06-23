@@ -138,11 +138,11 @@ BEGIN
 		variable counter4 : unsigned (DATA_IN_WIDTH/4-1 downto 0) := to_unsigned(7,DATA_IN_WIDTH/4);
 	begin		
         writing_frame <= '0';
-        for i in 1 to 19 loop
+        for i in 1 to 31 loop
             wait until falling_edge(clk);     
         end loop;
         wait until falling_edge(clk);
-		while counter1 < to_unsigned(10000,counter1'LENGTH) loop
+		while counter1 <= to_unsigned(10000,counter1'LENGTH) loop
             wait until falling_edge(clk);
             AlmostFull_d <= AlmostFull;  
             AlmostEmpty_d <= AlmostEmpty;
@@ -155,7 +155,7 @@ BEGIN
                 DataIn <= X"000000DD000000010000000200000003";
             end if;
             if writing_frame = '1' then 
-                if wr_skip_cnt = 19 then
+                if wr_skip_cnt = 21 then
                     WriteEn <= '1';
                     wr_skip_cnt <= 0;
                 else
@@ -208,10 +208,10 @@ BEGIN
 	-- Read process
 	rd_proc : process
 	begin
-        for i in 1 to 20 loop
+        for i in 1 to 30 loop
             wait until rising_edge(clk);     
         end loop;
-        for i in 1 to 50 loop
+        for i in 1 to 70 loop
             for i in 1 to 1024 loop
                 wait until rising_edge(clk);
                 if flagd = '1' then

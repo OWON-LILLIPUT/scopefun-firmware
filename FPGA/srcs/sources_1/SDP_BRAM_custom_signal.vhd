@@ -26,6 +26,10 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity SDP_BRAM_custom_signal is
+    generic (
+      DATA_DEPTH : integer;
+      DATA_WIDTH : integer 
+      );
     Port ( clka : in  STD_LOGIC;
            wea : in  STD_LOGIC;
            addra : in  STD_LOGIC_VECTOR (14 downto 0);
@@ -36,9 +40,6 @@ entity SDP_BRAM_custom_signal is
 end SDP_BRAM_custom_signal;
 
 architecture Behavioral of SDP_BRAM_custom_signal is
-
-constant DATA_DEPTH : integer := 32768;
-constant DATA_WIDTH : integer := 12;
 
 type ram_type is array (DATA_DEPTH-1 downto 0) of std_logic_vector (DATA_WIDTH-1 downto 0);
 signal ram : ram_type;

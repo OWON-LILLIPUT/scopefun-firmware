@@ -382,11 +382,11 @@ begin
 						if q_gen_1(0) = '0' then
 							ram_addrb_awg_1 <= std_logic_vector(kot_gen_1(bH downto 0));
 						elsif q_gen_1 = "01" then
-							ram_addrb_awg_1 <= std_logic_vector(to_signed(2048,12)+signed(kot_gen_1(bH downto 0)));
+							ram_addrb_awg_1 <= std_logic_vector(to_signed(2**bH,bH)+signed(kot_gen_1(bH downto 0)));
 						elsif q_gen_1 = "10" then
 							ram_addrb_awg_1 <= std_logic_vector(kot_gen_1(bH downto 0));
 						else
-							ram_addrb_awg_1 <= std_logic_vector(to_signed(2048,12)+signed(kot_gen_1(bH downto 0)));
+							ram_addrb_awg_1 <= std_logic_vector(to_signed(2**bH,bH)+signed(kot_gen_1(bH downto 0)));
 						end if;
 						enable_rand_1 <= '0';
 						
@@ -573,11 +573,11 @@ begin
 						if q_gen_2 = "00" then
 							ram_addrb_awg_2 <= std_logic_vector(kot_gen_2(bH downto 0));
 						elsif q_gen_2 = "01" then
-							ram_addrb_awg_2 <= std_logic_vector(to_signed(2048,12)+signed(kot_gen_2(bH downto 0)));
+							ram_addrb_awg_2 <= std_logic_vector(to_signed(2**bH,bH)+signed(kot_gen_2(bH downto 0)));
 						elsif q_gen_2 = "10" then
 							ram_addrb_awg_2 <= std_logic_vector(kot_gen_2(bH downto 0));
 						else
-							ram_addrb_awg_2 <= std_logic_vector(to_signed(2048,12)+signed(kot_gen_2(bH downto 0)));
+							ram_addrb_awg_2 <= std_logic_vector(to_signed(2**bH,bH)+signed(kot_gen_2(bH downto 0)));
 						end if;
 						enable_rand_2 <= '0';
 						

@@ -11,13 +11,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="118966916667fs"></ZoomStartTime>
-      <ZoomEndTime time="119652416668fs"></ZoomEndTime>
-      <Cursor1Time time="119035000000fs"></Cursor1Time>
+      <ZoomStartTime time="549806000000fs"></ZoomStartTime>
+      <ZoomEndTime time="550622000001fs"></ZoomEndTime>
+      <Cursor1Time time="549975000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="173"></NameColumnWidth>
-      <ValueColumnWidth column_width="140"></ValueColumnWidth>
+      <ValueColumnWidth column_width="136"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="30" />
    <wvobject fp_name="/fifo_128_to_32_tb/clk" type="logic">
@@ -92,6 +92,7 @@
    <wvobject fp_name="/fifo_128_to_32_tb/uut/RDCOUNT" type="array">
       <obj_property name="ElementShortName">RDCOUNT[8:0]</obj_property>
       <obj_property name="ObjectShortName">RDCOUNT[8:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/fifo_128_to_32_tb/Empty" type="logic">
       <obj_property name="ElementShortName">Empty</obj_property>
