@@ -155,7 +155,7 @@ BEGIN
                 DataIn <= X"000000DD000000010000000200000003";
             end if;
             if writing_frame = '1' then 
-                if wr_skip_cnt = 21 then
+                if wr_skip_cnt = 23 then
                     WriteEn <= '1';
                     wr_skip_cnt <= 0;
                 else
@@ -187,7 +187,7 @@ BEGIN
         for i in 0 to 150 loop
             wait until rising_edge(clk);
             flagd <= '0';
-            for i in 0 to 80 loop
+            for i in 0 to 56 loop
                 wait until rising_edge(clk);
             end loop;
             flagd <= '1';
@@ -195,7 +195,7 @@ BEGIN
                 wait until rising_edge(clk);
             end loop;
             flagd <= '0';
-            for i in 0 to 128 loop
+            for i in 0 to 82 loop
                 wait until rising_edge(clk);
             end loop;
             flagd <= '1';

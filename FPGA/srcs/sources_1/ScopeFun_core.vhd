@@ -361,18 +361,34 @@ architecture rtl of fpga is
            pll_locked : out STD_LOGIC);
     end component;
 
-component clk_wiz_0
-port
- (-- Clock in ports
-  -- Clock out ports
-  clk_out1          : out    std_logic;
-  clk_out2          : out    std_logic;
-  -- Status and control signals
-  reset             : in     std_logic;
-  locked            : out    std_logic;
-  clk_in1           : in     std_logic
- );
-end component;
+    component clk_wiz_0
+    port
+     (-- Clock in ports
+      -- Clock out ports
+      clk_out1          : out    std_logic;
+      clk_out2          : out    std_logic;
+      -- Status and control signals
+      reset             : in     std_logic;
+      locked            : out    std_logic;
+      clk_in1           : in     std_logic
+     );
+    end component;
+    
+	component mavg is
+    generic (
+        MAX_MAVG_LEN_LOG  : integer := 2
+    );
+    port (
+        i_clk         : in  std_logic;
+        i_rst         : in  std_logic;
+        -- input
+        mavg_len_log  : in integer range 0 to MAX_MAVG_LEN_LOG;
+        i_data_en     : in  std_logic;
+        i_data        : in  std_logic_vector(9 downto 0);
+        -- output
+        o_data_valid  : out std_logic;
+        o_data        : out std_logic_vector(9 downto 0));
+	end component;
 
 signal clk_adc_dclk : std_logic;
 signal clk_adc_p_delayed : std_logic;
@@ -817,7 +833,7 @@ signal DebugMState : integer range 0 to 7;
 signal DebugADCState : integer range 0 to 7;
 signal DebugADCState_d : integer range 0 to 7;
 signal PreTrigSaving : std_logic := '0';
-signal DataIn : std_logic_vector(31 downto 0);
+signal DDR3DataIn : std_logic_vector(31 downto 0);
 signal DataInTest : unsigned (31 downto 0);
 signal DataWriteEn : std_logic;
 signal DataWriteEn_d : std_logic;
@@ -837,6 +853,16 @@ signal device_temp : std_logic_vector(11 downto 0);
 signal device_temp_d : std_logic_vector(11 downto 0);
 signal device_temp_dd : std_logic_vector(11 downto 0);
 signal ram_rdy : std_logic;
+
+--adc post-processing
+signal mavg_enA: std_logic;
+signal mavg_enA_d: std_logic;
+signal mavg_datavalidA : std_logic;
+signal mavg_dataA : std_logic_vector(9 downto 0);
+signal mavg_enB: std_logic;
+signal mavg_enB_d: std_logic;
+signal mavg_datavalidB : std_logic;
+signal mavg_dataB : std_logic_vector(9 downto 0);
 
 -- attribute strings
 attribute KEEP: boolean;
@@ -1012,7 +1038,7 @@ port map (
        ui_clk => ifclk,
        rst => clearflags,
        FrameSize => framesize_dd,
-       DataIn => std_logic_vector(dataAd) & std_logic_vector(dataBd) & dataDd(11 downto 0),
+       DataIn => DDR3DataIn,
        --DataIn => std_logic_vector(to_unsigned(saved_sample_cnt_d,32)), --* debug!
 --       DataIn =>   std_logic_vector(DataInTest (9 downto 0))
 --                 & std_logic_vector(DataInTest (9 downto 0))
@@ -1277,6 +1303,30 @@ clk_wiz_0_pll : clk_wiz_0
    clk_in1 => clk_adc_dclk
  );
 
+mavg_ch1: mavg
+  generic map (MAX_MAVG_LEN_LOG => 2) 
+  PORT MAP (
+      i_clk => clk_adc_dclk,
+      i_rst => clearflags_d,
+      mavg_len_log => 2,
+      i_data_en => mavg_enA,
+      i_data => dataA,
+      o_data_valid => mavg_datavalidA,
+      o_data => mavg_dataA
+);
+
+mavg_ch2: mavg
+  generic map (MAX_MAVG_LEN_LOG => 2) 
+  PORT MAP (
+      i_clk => clk_adc_dclk,
+      i_rst => clearflags_d,
+      mavg_len_log => 2,
+      i_data_en => mavg_enB,
+      i_data => dataB,
+      o_data_valid => mavg_datavalidB,
+      o_data => mavg_dataB
+);
+
 clk_fx3 <= not(ifclk);
 slcs <= '0';
 		
@@ -1310,6 +1360,8 @@ pktend <= '1';  -- TODO:
 --LED_i(1) <= NOT(init_calib_complete_d); -- debug led
 --LED_i(1) <= not(dac_pll_locked); -- debug led
 
+DDR3DataIn <= std_logic_vector(dataAd) & std_logic_vector(dataBd) & dataDd(11 downto 0);
+
 ADC_interface_rising: process(clk_adc_dclk)
 
 begin
@@ -1330,9 +1382,17 @@ begin
         -- read digital channels
 		dataDd <= dataD;
 		--dataDd <= "00" & std_logic_vector(unsigned(genSignal_1_dd));  --test (debug)!
-        -- read ADC data
-		dataAd <= signed(dataA);     	
-		dataBd <= signed(dataB);
+        -- read ADC data and enable averaging
+        if mavg_enA_d = '1' then
+            dataAd <= signed(mavg_dataA);
+        else
+            dataAd <= signed(dataA);
+        end if;
+        if mavg_enB_d = '1' then
+            dataBd <= signed(mavg_dataB);
+        else
+            dataBd <= signed(dataB);
+        end if;
 
         genSignal_1_d <= genSignal_1(11 downto 2);
         genSignal_1_dd <= genSignal_1_d;
@@ -1472,6 +1532,8 @@ begin
 			when 27 =>
 			    digitalClkDivide_L <= cfg_do_B(31 downto 16);
 			    digitalClkDivide_tmp <= digitalClkDivide_H & digitalClkDivide_L;
+			    mavg_enA <= cfg_do_B(9);
+			    mavg_enB <= cfg_do_B(8);
 			when 28 =>
 			    digitalClkDivide <= unsigned(digitalClkDivide_tmp);
 			when others => null;
@@ -1515,6 +1577,7 @@ begin
             PreTrigWriteEn <= '0';
             
         else
+
 			-- select signal for trigger source
 			trig_signal_d <= trig_signal; -- monitor current and next value for trigger
 			
@@ -1608,6 +1671,9 @@ begin
 				digital_OutputWordMask_d <= digital_OutputWordMask;
 				digital_direction_d <= digital_Direction;				
 				ets_on_d <= ets_on;
+				mavg_enA_d <= mavg_enA;
+				mavg_enB_d <= mavg_enB;
+				
 				saved_sample_cnt <= 0;
 				saved_sample_cnt_d <= 0;
 				

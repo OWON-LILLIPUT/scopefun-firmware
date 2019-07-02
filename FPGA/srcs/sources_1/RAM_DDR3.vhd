@@ -468,7 +468,7 @@ begin
             frd_data_cnt <= frd_data_cnt + 1;
         end if;
         
-        -- enable read out of samples from RAM
+        -- enable reading samples from RAM
         -- assert data valid according to the fisrt sample location within RAM address 
         if frd_DataOutValid = '1' then
             if PreTrigSavingCntMod_d = 0 then
