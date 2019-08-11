@@ -241,7 +241,7 @@ fifo_proc: process (clk_wr)
          				when 1 =>
          					in_pkt_sel <= 2;
          					DataIn_1(31 downto 0) <= DataIn;
-         					WriteEn_1 <= '1';
+         					WriteEn_1 <= '0';
          					WriteEn_2 <= '0';
          			    when 2 =>
                             in_pkt_sel <= 3;
@@ -251,7 +251,7 @@ fifo_proc: process (clk_wr)
                         when 3 =>
                             in_pkt_sel <= 0;
                             DataIn_2(31 downto 0) <= DataIn;
-                            WriteEn_1 <= '0';
+                            WriteEn_1 <= '1';
                             WriteEn_2 <= '1';
          				when others =>
          					null;                       

@@ -390,7 +390,7 @@ architecture rtl of fpga is
         o_data        : out std_logic_vector(9 downto 0));
 	end component;
 
-signal clk_adc_dclk : std_logic;
+signal clk_adc_dclk : std_logic;    
 signal clk_adc_p_delayed : std_logic;
 signal clk_adc_n_delayed : std_logic;
 
@@ -1039,10 +1039,6 @@ port map (
        rst => clearflags,
        FrameSize => framesize_dd,
        DataIn => DDR3DataIn,
-       --DataIn => std_logic_vector(to_unsigned(saved_sample_cnt_d,32)), --* debug!
---       DataIn =>   std_logic_vector(DataInTest (9 downto 0))
---                 & std_logic_vector(DataInTest (9 downto 0))
---                 & std_logic_vector(DataInTest(11 downto 0)),
        PreTrigSaving => PreTrigSaving,
        PreTrigWriteEn => PreTrigWriteEn_d,
        PreTrigLen => std_logic_vector(pre_trigger_d),
@@ -1361,6 +1357,10 @@ pktend <= '1';  -- TODO:
 --LED_i(1) <= not(dac_pll_locked); -- debug led
 
 DDR3DataIn <= std_logic_vector(dataAd) & std_logic_vector(dataBd) & dataDd(11 downto 0);
+--DDR3DataIn <= std_logic_vector(to_unsigned(saved_sample_cnt_d,32)); --* debug!
+--DDR3DataIn <=   std_logic_vector(DataInTest (9 downto 0))
+--            & std_logic_vector(DataInTest (9 downto 0))
+--            & std_logic_vector(DataInTest(11 downto 0));
 
 ADC_interface_rising: process(clk_adc_dclk)
 

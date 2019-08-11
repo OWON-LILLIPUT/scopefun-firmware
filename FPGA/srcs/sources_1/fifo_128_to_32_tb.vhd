@@ -27,27 +27,43 @@ ENTITY fifo_128_to_32_tb IS
 END fifo_128_to_32_tb;
 
 ARCHITECTURE behavior OF fifo_128_to_32_tb IS 
-	
+
+COMPONENT fifo_gen_0
+  PORT (
+    clk   : IN STD_LOGIC;
+    srst  : IN STD_LOGIC;
+    din   : IN STD_LOGIC_VECTOR(127 DOWNTO 0);
+    wr_en : IN STD_LOGIC;
+    rd_en : IN STD_LOGIC;
+    dout  : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    full  : OUT STD_LOGIC;
+    almost_full  : OUT STD_LOGIC;
+    empty        : OUT STD_LOGIC;
+    almost_empty : OUT STD_LOGIC;
+    valid        : OUT STD_LOGIC
+  );
+END COMPONENT;
+
 	-- Component Declaration for the Unit Under Test (UUT)
-	component fifo_128_to_32
-		Generic (
-		  constant DATA_IN_WIDTH : positive :=  128;
-          constant FIFO_DEPTH    : positive :=  512
-		);
-		port (
-		  clk     : in  STD_LOGIC;
-          rst        : in  STD_LOGIC;
-          WriteEn    : in  STD_LOGIC;
-          DataIn    : in  STD_LOGIC_VECTOR (DATA_IN_WIDTH - 1 downto 0);
-          ReadEn    : in  STD_LOGIC;
-          DataOut    : out STD_LOGIC_VECTOR (DATA_IN_WIDTH/4 - 1 downto 0);
-          DataOutValid : out std_logic;
-          Empty    : out STD_LOGIC;
-          AlmostEmpty : out STD_LOGIC;
-          Full    : out STD_LOGIC;
-          AlmostFull : out STD_LOGIC
-		);
-	end component;
+--	component fifo_128_to_32
+--		Generic (
+--		  constant DATA_IN_WIDTH : positive :=  128;
+--          constant FIFO_DEPTH    : positive :=  512
+--		);
+--		port (
+--		  clk     : in  STD_LOGIC;
+--          rst        : in  STD_LOGIC;
+--          WriteEn    : in  STD_LOGIC;
+--          DataIn    : in  STD_LOGIC_VECTOR (DATA_IN_WIDTH - 1 downto 0);
+--          ReadEn    : in  STD_LOGIC;
+--          DataOut    : out STD_LOGIC_VECTOR (DATA_IN_WIDTH/4 - 1 downto 0);
+--          DataOutValid : out std_logic;
+--          Empty    : out STD_LOGIC;
+--          AlmostEmpty : out STD_LOGIC;
+--          Full    : out STD_LOGIC;
+--          AlmostFull : out STD_LOGIC
+--		);
+--	end component;
 
 	constant DATA_IN_WIDTH : integer := 128;
 	constant FIFO_DEPTH	: integer := 512;
@@ -81,21 +97,36 @@ ARCHITECTURE behavior OF fifo_128_to_32_tb IS
 BEGIN
 
 	-- Instantiate the Unit Under Test (UUT)
-	uut: fifo_128_to_32
+	uut: fifo_gen_0
 		PORT MAP (
-			CLK		     => CLK,
-			RST		     => RST,
-			DataIn	     => DataIn,
-			WriteEn	     => WriteEn,
-			ReadEn	     => ReadEn,
-			DataOut	     => DataOut,
-			DataOutValid => DataOutValid,
-			Full	     => Full,
-			Empty	     => Empty,
-			AlmostEmpty  => AlmostEmpty,
-			AlmostFull   => AlmostFull
+			clk    => CLK,
+			srst   => RST,
+			din    => DataIn,
+			wr_en  => WriteEn,
+			rd_en  => ReadEn,
+			dout   => DataOut,
+			full   => Full,
+			almost_full   => AlmostFull,
+			empty         => Empty,
+			almost_empty  => AlmostEmpty,
+			valid         => DataOutValid
 		);
-	
+
+--	uut: fifo_128_to_32
+--		PORT MAP (
+--			CLK		     => CLK,
+--			RST		     => RST,
+--			DataIn	     => DataIn,
+--			WriteEn	     => WriteEn,
+--			ReadEn	     => ReadEn,
+--			DataOut	     => DataOut,
+--			DataOutValid => DataOutValid,
+--			Full	     => Full,
+--			Empty	     => Empty,
+--			AlmostEmpty  => AlmostEmpty,
+--			AlmostFull   => AlmostFull
+--		);
+
 	-- Clock process definitions
 	CLK_process :process
 	begin
@@ -152,7 +183,7 @@ BEGIN
             -- or AlmostEmpty rising edge (then start writing to fifo)
             elsif AlmostEmpty_d = '0' and AlmostEmpty = '1' then
                 WriteEn <= '1';
-                DataIn <= X"000000DD000000010000000200000003";
+                --DataIn <= X"000000DD000000010000000200000003";
             end if;
             if writing_frame = '1' then 
                 if wr_skip_cnt = 23 then
@@ -187,7 +218,7 @@ BEGIN
         for i in 0 to 150 loop
             wait until rising_edge(clk);
             flagd <= '0';
-            for i in 0 to 56 loop
+            for i in 0 to 12095 loop
                 wait until rising_edge(clk);
             end loop;
             flagd <= '1';
@@ -214,7 +245,7 @@ BEGIN
         for i in 1 to 70 loop
             for i in 1 to 1024 loop
                 wait until rising_edge(clk);
-                if flagd = '1' then
+                if flagd = '1' and AlmostEmpty = '0' then
                     ReadEn <= '1';
                 else
                     ReadEn <= '0';

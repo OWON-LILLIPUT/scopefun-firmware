@@ -101,21 +101,22 @@ architecture Behavioral of RAM_DDR3 is
 
 --Read FIFO:
 
-    component fifo_128_to_32
-        port (
-          clk     : in  STD_LOGIC;
-          rst     : in  STD_LOGIC;
-          WriteEn : in  STD_LOGIC;
-          DataIn  : in  STD_LOGIC_VECTOR (127 downto 0);
-          ReadEn  : in  STD_LOGIC;
-          DataOut     : out STD_LOGIC_VECTOR (31 downto 0);
-          DataOutValid : out STD_LOGIC;
-          Empty       : out STD_LOGIC;
-          AlmostEmpty : out STD_LOGIC;
-          Full        : out STD_LOGIC;
-          AlmostFull  : out STD_LOGIC
-        );
-    end component;
+    COMPONENT fifo_gen_0
+        PORT (
+            clk : IN STD_LOGIC;
+            srst : IN STD_LOGIC;
+            din : IN STD_LOGIC_VECTOR(127 DOWNTO 0);
+            wr_en : IN STD_LOGIC;
+            rd_en : IN STD_LOGIC;
+            dout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            full : OUT STD_LOGIC;
+            almost_full : OUT STD_LOGIC;
+            empty : OUT STD_LOGIC;
+            almost_empty : OUT STD_LOGIC;
+            valid : OUT STD_LOGIC;
+            prog_full : OUT STD_LOGIC
+      );
+    END COMPONENT;
 
 --DDR3 interface top level:
 
@@ -296,6 +297,7 @@ attribute mark_debug of frd_Full : signal is true;
 attribute mark_debug of frd_Empty : signal is true;
 attribute mark_debug of ui_rd_data_available : signal is true;
 attribute mark_debug of frd_DataOut : signal is true;
+attribute mark_debug of fwr_DataOut : signal is true;
 
 attribute keep of ui_frameStart: signal is true;
 attribute mark_debug of ui_frameStart : signal is true;
@@ -331,21 +333,23 @@ RAM_WRITE_FIFO: fifo_32_to_128 PORT MAP (
 	AlmostEmpty  => fwr_AlmostEmpty,
 	AlmostFull   => fwr_AlmostFull
 	);
-	
-RAM_READ_FIFO: fifo_128_to_32 PORT MAP (
-    CLK          => ui_clk_i,
-    RST          => rst,
-    DataIn       => frd_DataIn,
-    WriteEn      => frd_WriteEn,
-    ReadEn       => frd_ReadEn,
-    DataOut      => frd_DataOut,
-    DataOutValid => frd_DataOutValid,
-    Full         => frd_Full,
-    Empty        => frd_Empty,
-    AlmostEmpty  => frd_AlmostEmpty,
-    AlmostFull   => frd_AlmostFull
-    );
-			
+
+RAM_READ_FIFO: fifo_gen_0
+  PORT MAP (
+    clk          => ui_clk_i,
+    srst         => rst,
+    din          => frd_DataIn,
+    wr_en        => frd_WriteEn,
+    rd_en        => frd_ReadEn,
+    dout         => frd_DataOut,
+    full         => frd_Full,
+    almost_full  => open,
+    empty        => frd_Empty,
+    almost_empty => frd_AlmostEmpty,
+    valid        => frd_DataOutValid,
+    prog_full    => frd_AlmostFull
+  );
+		
 RAM: ddr3_simple_ui PORT MAP (
 	-- DDR3 simple user interface
 	sys_clk_i  => sys_clk_i,
@@ -522,7 +526,7 @@ begin
                 if frd_AlmostFull_d = '1' then
                     frd_ReadEn <= '1';
                 -- if read fifo is empty, stop reading data from it
-                elsif frd_Empty = '1' then
+                elsif frd_AlmostEmpty = '1' then
                     frd_ReadEn <= '0';
                 -- if all samples have been read out of RAM
                 elsif frd_data_cnt >= unsigned(FrameSize)/4 then
@@ -533,6 +537,7 @@ begin
                 -- read is not requested and complete frame was transfered
                 -- but read fifo is still not empty
                 -- this can happen if more samples were saved in RAM than framesize
+                -- or frame rearing was aborted before reading full frame
                 --if DataOutEnable = '0' and ReadingFrame = '0' and frd_Empty = '0' then
                 if ReadingFrame = '0' and frd_data_cnt >= unsigned(FrameSize)/4 and frd_Empty = '0'then
                     -- assert read enable to read redundant samples from read fifo

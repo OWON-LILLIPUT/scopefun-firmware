@@ -82,8 +82,9 @@ set_max_delay -datapath_only -from [get_pins clearflags_reg/C] -to [get_pins cle
 set_max_delay -datapath_only -from [get_pins sig_out_enable_reg/C] -to [get_pins sig_out_enable_d_reg/D] 2.000
 set_max_delay -datapath_only -from [get_pins requestFrame_reg/C] -to [get_pins requestFrame_d_reg/D] 2.000
 set_max_delay -datapath_only -from [get_pins RAM_DDR3_inst/PreTrigSavingCntRecvd_reg/C] -to [get_pins RAM_DDR3_inst/PreTrigSavingCntRecvd_d_reg/D] 2.000
-set_max_delay -datapath_only -from [get_pins {RAM_DDR3_inst/PreTrigSavingCnt_reg[*]/C}] -to [get_pins {RAM_DDR3_inst/PreTrigSavingCnt_d_reg[*]/D}] 2.000
+set_max_delay -datapath_only -from [get_pins RAM_DDR3_inst/ram_rdy_i_reg/C] -to [get_pins RAM_DDR3_inst/ram_rdy_reg/D] 2.000
 set_max_delay -datapath_only -from [get_pins {pre_trigger_d_reg[*]/C}] -to [get_pins {RAM_DDR3_inst/RAM/wr_pretriglen_reg[*]/D}] 2.000
+
 
 #DDR3 controller
 # write FIFO reset
@@ -130,6 +131,7 @@ set_output_delay -clock [get_clocks dac_clk_1] -max -add_delay 0.500 [get_ports 
 
 #ignore timing for async signals
 set_max_delay -datapath_only -from [get_pins {DebugADCState_reg[*]/C}] -to [get_pins {DebugADCState_d_reg[*]/D}] 4.000
+
 
 
 
