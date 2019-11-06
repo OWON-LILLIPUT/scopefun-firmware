@@ -4,7 +4,7 @@ This is the [Xilinx Artix-7 FPGA](https://www.xilinx.com/products/silicon-device
 
 ## Getting started
 
-For comiling the FPGA firmware you must install the [ISE WebPACK Design Software](https://www.xilinx.com/products/design-tools/ise-design-suite/ise-webpack.html) from Xilinx.
+For comiling the FPGA firmware you must install the [Vivado Design Suite (WebPACK edition)](https://www.xilinx.com/products/design-tools/vivado/vivado-webpack.html) from Xilinx.
 
 After completing Vivado installation run the "gen_project.tcl" script from Vivado (Tools -> Run Tcl Script). This will create a new project and link ScopeFun sources from "srcs" folder.
 
