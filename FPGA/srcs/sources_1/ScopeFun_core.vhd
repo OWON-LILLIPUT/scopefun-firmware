@@ -113,6 +113,7 @@ architecture rtl of fpga is
     --CONSTANT AWG_MAX_SAMPLES : integer := 4096;
     --digital ch. interface width
     CONSTANT LA_DATA_WIDTH : INTEGER := 12;
+    CONSTANT LA_COUNTER_WIDTH : INTEGER := 16;
     --USB buffers
     CONSTANT FX3_DMA_BUFFER_SIZE : INTEGER := 1024;  -- FX3 DMA BUFER SIZE (number of bytes)
     
@@ -325,7 +326,7 @@ architecture rtl of fpga is
     component LA_core
         generic (
         LA_DATA_WIDTH : integer := LA_DATA_WIDTH;    -- Data input width
-        LA_COUNTER_WIDTH : integer := 16 -- Stage Counter width
+        LA_COUNTER_WIDTH : integer := LA_COUNTER_WIDTH -- Stage Counter width
     );
     Port ( clk_in : in std_logic;
            dt_enable : in std_logic;
@@ -1258,9 +1259,9 @@ port map(
     dt_enable => dt_enable,            
     dataD => dataDd, 
     digital_trig_mask_0 => digital_trig_mask(0),
-    digital_trig_mask_1 => digital_trig_mask(0),
-    digital_trig_mask_2 => digital_trig_mask(0),
-    digital_trig_mask_3 => digital_trig_mask(0),
+    digital_trig_mask_1 => digital_trig_mask(1),
+    digital_trig_mask_2 => digital_trig_mask(2),
+    digital_trig_mask_3 => digital_trig_mask(3),
     digital_trig_patternA_0 => digital_trig_patternA(0),
     digital_trig_patternA_1 => digital_trig_patternA(1),
     digital_trig_patternA_2 => digital_trig_patternA(2),
@@ -1270,10 +1271,10 @@ port map(
     digital_trig_patternB_2 => digital_trig_patternB(2),
     digital_trig_patternB_3 => digital_trig_patternB(3),
     dt_stage_capture => std_logic_vector(to_unsigned(dt_stage_capture,2)),
-    dt_delayMaxcnt_0 => std_logic_vector(dt_delayMaxcnt(0)),
-    dt_delayMaxcnt_1 => std_logic_vector(dt_delayMaxcnt(1)),
-    dt_delayMaxcnt_2 => std_logic_vector(dt_delayMaxcnt(2)),
-    dt_delayMaxcnt_3 => std_logic_vector(dt_delayMaxcnt(3)),
+    dt_delayMaxcnt_0 => std_logic_vector(dt_delayMaxcnt(0)(LA_COUNTER_WIDTH-1 downto 0)),
+    dt_delayMaxcnt_1 => std_logic_vector(dt_delayMaxcnt(1)(LA_COUNTER_WIDTH-1 downto 0)),
+    dt_delayMaxcnt_2 => std_logic_vector(dt_delayMaxcnt(2)(LA_COUNTER_WIDTH-1 downto 0)),
+    dt_delayMaxcnt_3 => std_logic_vector(dt_delayMaxcnt(3)(LA_COUNTER_WIDTH-1 downto 0)),
     dtSerial => dtSerial,
     dtSerialCh => std_logic_vector(to_unsigned(dtSerialCh,4)),
     dt_triggered => dt_triggered,
@@ -1350,11 +1351,8 @@ ch2_gnd <= ch2_gnd_i;
 ch1_k <= ch1_k_i;
 ch2_k <= ch2_k_i;
 	
-cc_ab  <= NOT(adc_interleaving_d);  -- TODO: enable only if double sampling rate is selected
-pktend <= '1';  -- TODO:
-
---LED_i(1) <= NOT(init_calib_complete_d); -- debug led
---LED_i(1) <= not(dac_pll_locked); -- debug led
+cc_ab  <= NOT(adc_interleaving_d);
+pktend <= '1';  -- TODO: use pktend for slow capture speeds
 
 DDR3DataIn <= std_logic_vector(dataAd) & std_logic_vector(dataBd) & dataDd(11 downto 0);
 --DDR3DataIn <= std_logic_vector(to_unsigned(saved_sample_cnt_d,32)); --* debug!
@@ -1856,14 +1854,9 @@ begin
 				
 			   -- External Digital Inputs trigger
 				elsif (ets_on_d = '0' AND trigger_source_d = "100") then
-
-                    if dt_triggered = '1' then
-                        dt_enable <= '0';
-                        GetSampleState <= ADC_E;
-                    else
-                        GetSampleState <= ADC_C;
-                        dt_enable <= '1';
-                    end if;
+                    --arm digital trigger
+                    GetSampleState <= ADC_D;
+                    dt_enable <= '1';
                     
 				else
 				
@@ -1878,6 +1871,7 @@ begin
 				PreTrigSaving <= '1';
 				PreTrigWriteEn <= '1';
 				triggered <= '0';
+				
 				if auto_trigger_cnt = auto_trigger_maxcnt then
                     auto_trigger_d <= '1';
                 else
@@ -1917,6 +1911,14 @@ begin
                         triggered_led <= '1';
                         GetSampleState <= ADC_E;
 
+			   -- External Digital Inputs trigger
+				elsif (ets_on_d = '0' AND trigger_source_d = "100") then
+                    if dt_triggered = '1' then
+                        GetSampleState <= ADC_E;
+                    else
+                        GetSampleState <= ADC_D;
+                    end if;
+                    
     			else
 
 					GetSampleState <= ADC_D;
@@ -1948,6 +1950,7 @@ begin
 
                 PreTrigSaving <= '0';
 			    PreTrigWriteEn <= '0';
+			    dt_enable <= '0';
 			    
 				if ( clearflags_d = '1' ) then
 					t_start <= '0'; --reset holdoff timer start bit
