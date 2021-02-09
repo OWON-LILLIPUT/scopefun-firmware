@@ -34,6 +34,8 @@ entity awg_core is
             --clk enable
             generator1On : in STD_LOGIC;
             generator2On : in STD_LOGIC;
+            phase_sync : in STD_LOGIC;
+            phase_val : in STD_LOGIC_VECTOR(bH downto 0);
             --AWG1
             genSignal_1        : out signed (11 downto 0);
             ram_addrb_awg_1    : out STD_LOGIC_VECTOR (14 downto 0);
@@ -72,6 +74,8 @@ architecture Behavioral of awg_core is
 			clk : in STD_LOGIC;
 			clk_en : in STD_LOGIC;
 			generatorDelta : in sfixed(bH downto bL);
+            phase_sync : in std_logic;
+            phase_val : in sfixed(bH downto bL);
 			kot_gen : out sfixed(bH downto 0);
 			q_gen : out std_logic_vector(1 downto 0)
 			);
@@ -118,6 +122,9 @@ signal dac_clk_buff_i_180 : std_logic;
 
 signal generator1On_d : std_logic;
 signal generator2On_d : std_logic;
+
+signal generator1On_dd : std_logic;
+signal generator2On_dd : std_logic;
 
 signal s_axis_phase_tvalid_1 : std_logic;
 signal s_axis_phase_tdata_1 : std_logic_vector(15 downto 0);
@@ -200,6 +207,9 @@ signal random_num_2_tmp : signed (bH downto bH-11);
 signal enable_rand_1 : std_logic;
 signal enable_rand_2 : std_logic;
 
+signal phase_sync_i : std_logic := '0';
+signal phase_val_i : std_logic_vector(bH-bL downto 0) := std_logic_vector(to_unsigned(0,bh-bL+1));
+
 -- set keep attributes for registers
 --attribute keep: boolean;
 --attribute keep of some_signal: signal is true;
@@ -239,31 +249,39 @@ attribute KEEP of generatorDuty_2d         : signal is true;
 attribute ASYNC_REG of generatorDuty_2d         : signal is true;
 attribute KEEP of generatorCustomSample_2d : signal is true;
 attribute ASYNC_REG of generatorCustomSample_2d : signal is true;
+attribute KEEP of phase_val_i      : signal is true;
+attribute ASYNC_REG of phase_val_i : signal is true;
 
 attribute KEEP of genSignal_1_tmp_d : signal is true;
 attribute mark_debug of genSignal_1_tmp_d : signal is true;
 attribute KEEP of dac_data_1 : signal is true;
 attribute mark_debug of dac_data_1 : signal is true;
 
+
+
 begin
 
 	angle_generator_1 : angle_gen
 	   port map (
-              clk => clk_in,
-			  clk_en => generator1On_d,
-	 	      generatorDelta => to_sfixed(generatorDelta_1_i, bH,bL),
-	          kot_gen => kot_gen_1,
-			  q_gen => q_gen_1
+            clk => clk_in,
+            clk_en => generator1On_d,
+            generatorDelta => to_sfixed(generatorDelta_1_i, bH,bL),
+            phase_sync => phase_sync_i,
+	        phase_val => to_sfixed(0,bH,bL),
+	        kot_gen => kot_gen_1,
+			q_gen => q_gen_1
 			  );
 	
 	angle_generator_2 : angle_gen
 	   port map (
-              clk => clk_in,
-	 	      clk_en => generator2On_d,
-			  generatorDelta => to_sfixed(generatorDelta_2_i, bH,bL),
-	          kot_gen => kot_gen_2,
-			  q_gen => q_gen_2
-			  );
+            clk => clk_in,
+	 	    clk_en => generator2On_d,
+			generatorDelta => to_sfixed(generatorDelta_2_i, bH,bL),
+	        phase_sync => phase_sync_i,
+	        phase_val => to_sfixed(phase_val_i, bH, bL),
+	        kot_gen => kot_gen_2,
+			q_gen => q_gen_2
+			);
 	
 --	cordic_par_core_1 : cordic_par
 --	   port map (
@@ -331,7 +349,12 @@ begin
 	if (rising_edge(clk_in)) then
 	
 	    generator1On_d <= generator1On;
-	    generator2On_d <= generator2On;	   
+	    generator2On_d <= generator2On;
+	    if generator2On_dd = '0' and generator2On_d = '1' then
+	   	   phase_sync_i <= '1';
+	   	else
+	   	   phase_sync_i <= phase_sync;
+	   	end if;
 	   	   
 		if ( generator1On_d = '1' OR generator2On_d = '1' ) then
 			
@@ -350,7 +373,8 @@ begin
 					generatorDuty_1d <= generatorDuty_1;
 					generatorCustomSample_1d <= generatorCustomSample_1;
 					random_num_1_tmp <= signed(random_num_1);
-					
+				    generatorDelta_1_i <= '0' & generatorDelta_1(31 downto 1);
+				    
 					--utilize DSP block (multiply/add)
 					genSignal_1_tmp_d <= genSignal_1_tmp;
 					genSignal_1_tmp_dd <= genSignal_1_tmp_d;
@@ -375,7 +399,6 @@ begin
 					--======================		
 
 					if unsigned(generatorType_1d) = 0 then
-						generatorDelta_1_i <= '0' & generatorDelta_1(31 downto 1);
 						genSignal_1_tmp <= signed(generatorCustomSample_1d); -- read Custom Sample from RAM
 						---genSignal_tmp <= signed(awg_doutB(11 downto 0));
 						-- increment RAM address according to angle generator output
@@ -395,7 +418,6 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_1d) = 1 then
-						generatorDelta_1_i <= '0' & generatorDelta_1(31 downto 1);
 						-- generate phase
 						if q_gen_1(0) = '0' then
                             kot_gen_1_tmp <= std_logic_vector(signed(kot_gen_1(bH downto 0)));
@@ -418,7 +440,6 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_1d) = 2 then
-						generatorDelta_1_i <= '0' & generatorDelta_1(31 downto 1);
 						-- generate phase
 						if q_gen_1(0) = '0' then
                             kot_gen_1_tmp <= std_logic_vector(signed(kot_gen_1(bH downto 0)));
@@ -441,15 +462,11 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_1d) = 3 then
-						generatorDelta_1_i <= generatorDelta_1;
-						if q_gen_1 = "00" then
-							genSignal_1_tmp <= signed(kot_gen_1(bH downto bH-11));
-						elsif q_gen_1 = "01" then
-							genSignal_1_tmp <= to_signed(2047,12)-signed(kot_gen_1(bH downto bH-11));
-						elsif q_gen_1 = "10" then
-							genSignal_1_tmp <= -signed(kot_gen_1(bH downto bH-11));
-						else
-							genSignal_1_tmp <= to_signed(-2047,12)+signed(kot_gen_1(bH downto bH-11));
+						if q_gen_1 = "00" OR q_gen_1 = "10" then
+							genSignal_1_tmp <= to_signed(-2048,12)+signed(kot_gen_1(bH-1 downto bH-12));
+							--signed(kot_gen_2(bH downto bH-11));
+						elsif q_gen_1 = "01" OR q_gen_1 = "11" then
+						    genSignal_1_tmp <= to_signed(2047,12)-signed(kot_gen_1(bH-1 downto bH-12));
 						end if;
 						enable_rand_1 <= '0';
 						
@@ -458,7 +475,6 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_1d) = 4 then
-						generatorDelta_1_i <= '0' & generatorDelta_1(31 downto 1);
 						if q_gen_1(0) = '0' then
 							genSignal_1_tmp <= signed(kot_gen_1(bH downto bH-11));
 						else
@@ -471,7 +487,6 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_1d) = 5 then
-						generatorDelta_1_i <= '0' & generatorDelta_1(31 downto 1);
 						if q_gen_1(0) = '0' then
 							genSignal_1_tmp <= -signed(kot_gen_1(bH downto bH-11));
 						else
@@ -484,11 +499,18 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_1d) = 6 then
-						generatorDelta_1_i <= "00" & generatorDelta_1(31 downto 2);
-						if signed(kot_gen_1(bH downto bH-11)) < generatorDuty_1d then
-							genSignal_1_tmp <= to_signed(2047,12);
+						if q_gen_1(0) = '1' then
+					        if signed(kot_gen_1(bH downto bH-11)) < 2*(to_signed(-1024,12)+generatorDuty_1d) then
+					            genSignal_1_tmp <= to_signed(2047,12);
+						    else
+							    genSignal_1_tmp <= to_signed(-2047,12);       
+						    end if;
 						else
-							genSignal_1_tmp <= to_signed(-2047,12);
+						    if signed(kot_gen_1(bH downto bH-11)) < 2*(generatorDuty_1d) then
+					            genSignal_1_tmp <= to_signed(2047,12);
+						    else
+							    genSignal_1_tmp <= to_signed(-2047,12);       
+						    end if;					
 						end if;
 						enable_rand_1 <= '0';
 						
@@ -496,10 +518,9 @@ begin
 					-- Delta
 					--======================
 
-					elsif unsigned(generatorType_1d) = 7 then
-						generatorDelta_1_i <= generatorDelta_1;
-						q_gen_1_d1 <= q_gen_1(1);
-						if q_gen_1_d1 = '1' and q_gen_1(1) = '0' then
+					elsif unsigned(generatorType_1d) = 7 then			
+						q_gen_1_d1 <= q_gen_1(0);
+						if q_gen_1_d1 = '1' and q_gen_1(0) = '0' then
 							genSignal_1_tmp <= to_signed(2047,12);
 						else
 							genSignal_1_tmp <= to_signed(-2047,12);
@@ -518,7 +539,6 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_1d) = 9 then
-						generatorDelta_1_i <= generatorDelta_1;
 						enable_rand_1 <= '1';
 						genSignal_1_tmp <= random_num_1_tmp;
 						
@@ -532,7 +552,7 @@ begin
 --					--connect generator #2 to cordic core
 --					kot_gen <= kot_gen_2;
 --					q_gen <= q_gen_2;
-				
+				    
 					--registers inputs
 					generatorType_2d <= generatorType_2;
 					generatorVoltage_2d <= generatorVoltage_2;
@@ -541,7 +561,9 @@ begin
 					generatorDuty_2d <= generatorDuty_2;
 					generatorCustomSample_2d <= generatorCustomSample_2;
 					random_num_2_tmp <= signed(random_num_2);
-
+				    generatorDelta_2_i <= '0' & generatorDelta_2(31 downto 1);
+					phase_val_i <= phase_val & std_logic_vector(to_unsigned(0,abs(bL)));
+					
 					--utilize DSP block (multiply/add)
 					genSignal_2_tmp_d <= genSignal_2_tmp;
 					genSignal_2_tmp_dd <= genSignal_2_tmp_d;
@@ -558,7 +580,7 @@ begin
                     genSignal_2 <= genSignal_2_ii;
                     --Converting from Two's Complement to Offset Binary
                     --dac_data_2 <= std_logic_vector( genSignal_2_ii + to_signed(2048,12) ); --add Offset
-                    dac_data_2 <= std_logic_vector( NOT(genSignal_2_ii(11)) & genSignal_2_ii(10 downto 0) ) ; --convert to offseet binary
+                    dac_data_2 <= std_logic_vector( NOT(genSignal_2_ii(11)) & genSignal_2_ii(10 downto 0) ) ; --convert to offset binary
 --					dac_data_2 <= dac_data_2_test;
 					                    
 					--======================
@@ -566,7 +588,6 @@ begin
 					--======================		
 
 					if unsigned(generatorType_2d) = 0 then
-						generatorDelta_2_i <= '0' & generatorDelta_2(31 downto 1);
 						genSignal_2_tmp <= signed(generatorCustomSample_2d); -- read Custom Sample from RAM
 						---genSignal_tmp <= signed(awg_doutB(11 downto 0));
 						-- increment RAM address according to angle generator output
@@ -586,7 +607,6 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_2d) = 1 then
-						generatorDelta_2_i <= '0' & generatorDelta_2(31 downto 1);			
 						-- generate phase
 						if q_gen_2(0) = '0' then
                             kot_gen_2_tmp <= std_logic_vector(signed(kot_gen_2(bH downto 0)));
@@ -609,7 +629,6 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_2d) = 2 then
-						generatorDelta_2_i <= '0' & generatorDelta_2(31 downto 1);			
                         -- generate phase
 						if q_gen_2(0) = '0' then
                             kot_gen_2_tmp <= std_logic_vector(signed(kot_gen_2(bH downto 0)));
@@ -632,24 +651,19 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_2d) = 3 then
-						generatorDelta_2_i <= generatorDelta_2;					
-						if q_gen_2 = "00" then
-							genSignal_2_tmp <= signed(kot_gen_2(bH downto bH-11));
-						elsif q_gen_2 = "01" then
-							genSignal_2_tmp <= to_signed(2047,12)-signed(kot_gen_2(bH downto bH-11));
-						elsif q_gen_2 = "10" then
-							genSignal_2_tmp <= -signed(kot_gen_2(bH downto bH-11));
-						else
-							genSignal_2_tmp <= to_signed(-2047,12)+signed(kot_gen_2(bH downto bH-11));
+						if q_gen_2 = "00" OR q_gen_2 = "10" then
+							genSignal_2_tmp <= to_signed(-2048,12)+signed(kot_gen_2(bH-1 downto bH-12));
+							--signed(kot_gen_2(bH downto bH-11));
+						elsif q_gen_2 = "01" OR q_gen_2 = "11" then
+						    genSignal_2_tmp <= to_signed(2047,12)-signed(kot_gen_2(bH-1 downto bH-12));
 						end if;
-						enable_rand_2 <= '0';	
+						enable_rand_2 <= '0';
 						
 					--======================
 					-- Ramp Up
 					--======================
 
 					elsif unsigned(generatorType_2d) = 4 then
-						generatorDelta_2_i <= '0' & generatorDelta_2(31 downto 1);	
 						if q_gen_2(0) = '0' then
 							genSignal_2_tmp <= signed(kot_gen_2(bH downto bH-11));
 						else
@@ -662,7 +676,6 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_2d) = 5 then
-						generatorDelta_2_i <= '0' & generatorDelta_2(31 downto 1);	
 						if q_gen_2(0) = '0' then
 							genSignal_2_tmp <= -signed(kot_gen_2(bH downto bH-11));
 						else
@@ -675,11 +688,18 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_2d) = 6 then
-						generatorDelta_2_i <= "00" & generatorDelta_2(31 downto 2);					
-						if signed(kot_gen_2(bH downto bH-11)) < generatorDuty_2d then
-							genSignal_2_tmp <= to_signed(2047,12);
+						if q_gen_2(0) = '1' then
+					        if signed(kot_gen_2(bH downto bH-11)) < 2*(to_signed(-1024,12)+generatorDuty_2d) then
+					            genSignal_2_tmp <= to_signed(2047,12);
+						    else
+							    genSignal_2_tmp <= to_signed(-2047,12);       
+						    end if;
 						else
-							genSignal_2_tmp <= to_signed(-2047,12);
+						    if signed(kot_gen_2(bH downto bH-11)) < 2*(generatorDuty_2d) then
+					            genSignal_2_tmp <= to_signed(2047,12);
+						    else
+							    genSignal_2_tmp <= to_signed(-2047,12);       
+						    end if;					
 						end if;
 						enable_rand_2 <= '0';
 						
@@ -688,9 +708,8 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_2d) = 7 then
-						generatorDelta_2_i <= generatorDelta_2;					
-						q_gen_2_d1 <= q_gen_2(1);
-						if q_gen_2_d1 = '1' and q_gen_2(1) = '0' then
+						q_gen_2_d1 <= q_gen_2(0);
+						if q_gen_2_d1 = '1' and q_gen_2(0) = '0' then
 							genSignal_2_tmp <= to_signed(2047,12);
 						else
 							genSignal_2_tmp <= to_signed(-2047,12);
@@ -710,7 +729,6 @@ begin
 					--======================
 
 					elsif unsigned(generatorType_2d) = 9 then
-						generatorDelta_2_i <= generatorDelta_2;
 						genSignal_2_tmp <= random_num_2_tmp;
 						enable_rand_2 <= '1';
 						

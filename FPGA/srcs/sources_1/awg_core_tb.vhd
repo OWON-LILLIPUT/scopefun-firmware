@@ -31,16 +31,18 @@ architecture Behavioral of awg_core_tb is
     
     component awg_core is
     generic (
-        bH : integer := 11; -- angle input precision high index
-        bL : integer := -20 -- angle input precision low index
+        bH : integer := 14; -- angle input precision high index
+        bL : integer := -17 -- angle input precision low index
     );
     Port (
         clk_in : in  STD_LOGIC;
         generator1On : in STD_LOGIC;
         generator2On : in STD_LOGIC;
+        phase_sync : in STD_LOGIC;
+        phase_val : in STD_LOGIC_VECTOR(bH downto 0);        
         --AWG1
         genSignal_1     : out signed (11 downto 0);
-        ram_addrb_awg_1 : out STD_LOGIC_VECTOR (11 downto 0);
+        ram_addrb_awg_1 : out STD_LOGIC_VECTOR (14 downto 0);
         generatorType_1 : in  STD_LOGIC_VECTOR (3 downto 0);
         generatorVoltage_1 : in  sfixed(0 downto -11);
         generatorOffset_1 : in  SIGNED (11 downto 0);
@@ -49,7 +51,7 @@ architecture Behavioral of awg_core_tb is
         generatorCustomSample_1 : in  STD_LOGIC_VECTOR (11 downto 0);
         --AWG2
         genSignal_2     : out signed (11 downto 0);
-        ram_addrb_awg_2 : out STD_LOGIC_VECTOR (11 downto 0);
+        ram_addrb_awg_2 : out STD_LOGIC_VECTOR (14 downto 0);
         generatorType_2 : in  STD_LOGIC_VECTOR (3 downto 0);
         generatorVoltage_2 : in  sfixed(0 downto -11);
         generatorOffset_2 : in  SIGNED (11 downto 0);
@@ -72,27 +74,31 @@ architecture Behavioral of awg_core_tb is
            o_data_ddr : out std_logic_vector (11 downto 0));
     end component;
     
-    constant bH : integer := 11; -- angle input precision high index
-    constant bL : integer := -20; -- angle input precision low index
+    constant bH : integer := 14; -- angle input precision high index
+    constant bL : integer := -17; -- angle input precision low index
     
     --clk and enable signals
     signal clk : std_logic := '0';
     signal generator1On : std_logic := '0';
     signal generator2On : std_logic := '0';
+    signal phase_sync : STD_LOGIC := '0';
+    signal phase_val : STD_LOGIC_VECTOR(bH downto 0):=std_logic_vector(to_signed(0,bH+1));
+    signal phase_val_tmp : STD_LOGIC_VECTOR(bH downto 0):=std_logic_vector(to_signed(0,bH+1));
+    
     --AWG1
 	signal genSignal_1     			: signed (11 downto 0);
-    signal ram_addrb_awg_1          : STD_LOGIC_VECTOR (11 downto 0);
+    signal ram_addrb_awg_1          : STD_LOGIC_VECTOR (14 downto 0);
     signal generatorType_1          : STD_LOGIC_VECTOR (3 downto 0) := std_logic_vector(to_unsigned(0,4));
-    signal generatorVoltage_1       : sfixed(0 downto -11):="101111111111";
+    signal generatorVoltage_1       : sfixed(0 downto -11):="011111111111";
     signal generatorOffset_1        : SIGNED (11 downto 0):="000000000000";
     signal generatorDuty_1          : signed(11 downto 0):="000000000000";
     signal generatorDelta_1         : STD_LOGIC_VECTOR(bH-bL downto 0):=std_logic_vector(to_unsigned(0,bH-bL+1));
     signal generatorCustomSample_1  : STD_LOGIC_VECTOR (11 downto 0):="000000000000";
     --AWG2
     signal genSignal_2              : signed (11 downto 0);
-    signal ram_addrb_awg_2          : STD_LOGIC_VECTOR (11 downto 0);
+    signal ram_addrb_awg_2          : STD_LOGIC_VECTOR (14 downto 0);
     signal generatorType_2          : STD_LOGIC_VECTOR (3 downto 0) := std_logic_vector(to_unsigned(0,4));
-    signal generatorVoltage_2       : sfixed(0 downto -11):="101111111111";
+    signal generatorVoltage_2       : sfixed(0 downto -11):="011111111111";
     signal generatorOffset_2        : SIGNED (11 downto 0):="000000000000";
     signal generatorDuty_2          : signed(11 downto 0):="000000000000";
     signal generatorDelta_2         : STD_LOGIC_VECTOR(bH-bL downto 0):=std_logic_vector(to_unsigned(0,bH-bL+1));
@@ -122,6 +128,8 @@ begin
         clk_in                  =>  clk,
         generator1On            =>  generator1On,
         generator2On            =>  generator2On,
+        phase_sync              =>  phase_sync,
+        phase_val               =>  phase_val,
         genSignal_1     	    =>  genSignal_1,
         ram_addrb_awg_1         =>  ram_addrb_awg_1,
         generatorType_1         =>  generatorType_1,
@@ -168,16 +176,33 @@ begin
     
         wait until rising_edge(clk);
         --initialise awg_core signals
+        phase_sync <= '0';
+--        phase_val <= std_logic_vector(to_unsigned(1000000000,bH-bL+1));
+        phase_val <= std_logic_vector(to_signed(-8382,bH+1));
+        wait until rising_edge(clk);
+        
         generator1On <= '1';
-        generator2On <= '1';
-        generatorDelta_1 <= std_logic_vector(to_unsigned(500000,bH-bL+1));
-        generatorDelta_2 <= std_logic_vector(to_unsigned(500000,bH-bL+1));
-        generatorType_1 <= std_logic_vector(to_unsigned(2,4));
-        generatorType_2 <= std_logic_vector(to_unsigned(2,4));
-        for i in 1 to 15 loop
+        generatorDelta_1 <= std_logic_vector(to_unsigned(100000000,bH-bL+1));
+        generatorDelta_2 <= std_logic_vector(to_unsigned(100000000,bH-bL+1));
+        generatorType_1 <= std_logic_vector(to_unsigned(3,4));
+        generatorType_2 <= std_logic_vector(to_unsigned(3,4));
+        generatorDuty_1 <= "000000000000";
+        generatorDuty_2 <= to_signed(50,12);
+        
+        for i in 1 to 100 loop
             wait until rising_edge(clk);
         end loop;
-
+        generator2On <= '1';
+        for i in 1 to 200 loop
+            wait until rising_edge(clk);
+        end loop;
+        phase_sync <= '1';
+        wait until rising_edge(clk);
+        for i in 1 to 1500 loop
+            wait until rising_edge(clk);
+        end loop;
+        phase_sync <= '0';
+        
     end process;
        
 end;

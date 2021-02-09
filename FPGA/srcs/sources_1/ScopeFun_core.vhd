@@ -240,6 +240,8 @@ architecture rtl of fpga is
             --clk enable
             generator1On : in STD_LOGIC;
             generator2On : in STD_LOGIC;
+            phase_sync : in STD_LOGIC;
+            phase_val : in STD_LOGIC_VECTOR(bH downto 0);
 			--AWG1
 			genSignal_1     : out signed (11 downto 0);
 			ram_addrb_awg_1 : out STD_LOGIC_VECTOR (14 downto 0);
@@ -565,6 +567,8 @@ signal generator1On : std_logic;
 signal generator2On : std_logic;
 signal sig_out_enable : std_logic;
 signal sig_out_enable_d : std_logic;
+signal phase_sync : STD_LOGIC := '0';
+signal phase_val : STD_LOGIC_VECTOR(bH downto 0);
 
 -- AWG custom buffer
 signal wea_awg : STD_LOGIC;
@@ -1139,6 +1143,8 @@ port map (
 	    --Signal Generator(clk) enable
 	    generator1On => generator1On AND sig_out_enable_d,
 	    generator2On => generator2On AND sig_out_enable_d,
+	    phase_sync => phase_sync,
+	    phase_val => phase_val,
 	    --AWG1
 	 	genSignal_1 => genSignal_1,
 	    ram_addrb_awg_1 => addrb_awg,
@@ -1533,6 +1539,7 @@ begin
 			    mavg_enA <= cfg_do_B(9);
 			    mavg_enB <= cfg_do_B(8);
 			when 28 =>
+			    phase_val <= cfg_do_B(30 downto 16);
 			    digitalClkDivide <= unsigned(digitalClkDivide_tmp);
 			when others => null;
 		end case;
@@ -1602,64 +1609,50 @@ begin
 
 			    timebase_d <= timebase; -- select sampling frequency for next frame
 
-			    case timebase_d (4 downto 0) is
+			    case to_integer(unsigned(timebase_d (4 downto 0))) is
 				
-					when "00000" =>		-- 4 ns between samples
+					when 0 | 1 =>		-- 4 ns between samples
 						auto_trigger_maxcnt <= 400000; -- 1.6 ms auto trigger timeout
-					when "00001" =>		-- 8 ns
+					when 2 =>		-- 8 ns
 						auto_trigger_maxcnt <= 200000; -- 1.6 ms
-					when "00010" =>		-- 20 ns
+					when 3 =>		-- 20 ns
 						auto_trigger_maxcnt <= 100000; -- 2 ms
-					when "00011" =>		-- 40 ns
+					when 4 =>		-- 40 ns
 						auto_trigger_maxcnt <= 100000; -- 4 ms
-					when "00100" =>		-- 80 ns
+					when 5 =>		-- 80 ns
 						auto_trigger_maxcnt <= 100000; -- 8 ms					
-					when "00101" =>		-- 200 ns
+					when 6 =>		-- 200 ns
 						auto_trigger_maxcnt <= 50000; -- 10 ms					
-					when "00110" =>		-- 400 ns
+					when 7 =>		-- 400 ns
 						auto_trigger_maxcnt <= 25000; -- 10 ms				
-					when "00111" =>		-- 800 ns
+					when 8 =>		-- 800 ns
 						auto_trigger_maxcnt <= 25000;  -- 20 ms				
-					when "01000" =>		-- 2 us
+					when 9 =>		-- 2 us
 						auto_trigger_maxcnt <= 10000;  -- 20 ms				
-					when "01001" =>		-- 4 us
+					when 10 =>		-- 4 us
 						auto_trigger_maxcnt <= 5000;  -- 20 ms					
-					when "01010" =>		-- 8 us
+					when 11 =>		-- 8 us
 						auto_trigger_maxcnt <= 5000;  -- 40 ms					
-					when "01011" =>		-- 20 us
+					when 12 =>		-- 20 us
 						auto_trigger_maxcnt <= 5000;  -- 100 ms					
-					when "01100" =>		-- 40 us
+					when 13 =>		-- 40 us
 						auto_trigger_maxcnt <= 5000;  -- 200 ms					
-					when "01101" =>		-- 80 us
+					when 14 =>		-- 80 us
 						auto_trigger_maxcnt <= 5000;   -- 400 ms				
-					when "01110" =>		-- 200 us
+					when 15 =>		-- 200 us
 						auto_trigger_maxcnt <= 2000;   -- 400 ms					
-					when "01111" =>		-- 400 us
+					when 16 =>		-- 400 us
 						auto_trigger_maxcnt <= 1000;   -- 400 ms					
-					when "10000" =>		-- 800 us
+					when 17 =>		-- 800 us
 						auto_trigger_maxcnt <= 500;    -- 400 ms
-					when "10001" =>		-- 2 ms
+					when 18 =>		-- 2 ms
 						auto_trigger_maxcnt <= 200;    -- 400 ms				
-					when "10010" =>		-- 4 ms
+					when 19 =>		-- 4 ms
 						auto_trigger_maxcnt <= 100;    -- 400 ms					
-					when "10011" =>		-- 8 ms
+					when 20 =>		-- 8 ms
 						auto_trigger_maxcnt <= 100;    -- 800 ms				
-					when "10100" =>		-- 20 ms
-						auto_trigger_maxcnt <= 50;     -- 1000 ms
-				    --
-		            -- the following capture speeds are not used	
---					when "10101" =>		-- 40 ms
---						auto_trigger_maxcnt <= 20;     -- 2 s				
---					when "10110" =>		-- 80 ms
---						auto_trigger_maxcnt <= 10;     -- 2 s					
---					when "10111" =>		-- 200 ms
---						auto_trigger_maxcnt <= 10;     -- 5 s				
---					when "11000" =>		-- 400 ms
---						auto_trigger_maxcnt <= 5;      -- 5 s				
---					when "11001" =>		-- 800 ms
---						auto_trigger_maxcnt <= 5;      -- 10 s					
---					when "11111" =>		-- 2 s per sample
---						auto_trigger_maxcnt <= 100000; -- 1 ms auto trigger timeout
+					when 21 =>		-- 20 ms
+						auto_trigger_maxcnt <= 50;     -- 1000 ms			
 					when others =>
 						null;	
 				end case;

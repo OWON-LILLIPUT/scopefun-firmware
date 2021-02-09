@@ -56,6 +56,7 @@ set_false_path -from [get_pins sig_out_enable_d_reg/C] -to [get_pins signal_gene
 set_false_path -from [get_pins sig_out_enable_d_reg/C] -to [get_pins signal_generator_inst/generator2On_d_reg/D]
 set_false_path -from [get_pins generator1On_reg/C] -to [get_pins signal_generator_inst/generator1On_d_reg/D]
 set_false_path -from [get_pins generator2On_reg/C] -to [get_pins signal_generator_inst/generator2On_d_reg/D]
+
 #AWG inputs
 set_max_delay -datapath_only -from [get_pins {generator1Delta_reg[*]/C}] -to [get_pins {signal_generator_inst/generatorDelta_1_i_reg[*]/D}] 2.000
 set_max_delay -datapath_only -from [get_pins {generator2Delta_reg[*]/C}] -to [get_pins {signal_generator_inst/generatorDelta_2_i_reg[*]/D}] 2.000
@@ -67,6 +68,7 @@ set_max_delay -datapath_only -from [get_pins {generator1Type_reg[*]/C}] -to [get
 set_max_delay -datapath_only -from [get_pins {generator2Type_reg[*]/C}] -to [get_pins {signal_generator_inst/generatorType_2d_reg[*]/D}] 2.000
 set_max_delay -datapath_only -from [get_pins {generator1Voltage_reg[*]/C}] -to [get_pins {signal_generator_inst/generatorVoltage_1d_reg[*]/D}] 2.000
 set_max_delay -datapath_only -from [get_pins {generator2Voltage_reg[*]/C}] -to [get_pins {signal_generator_inst/generatorVoltage_2d_reg[*]/D}] 2.000
+set_max_delay -datapath_only -from [get_pins {phase_val_reg[*]/C}] -to [get_pins {signal_generator_inst/phase_val_i_reg[*]/D}] 2.000
 
 #clk_adc to clk_fx3 CDC
 set_max_delay -datapath_only -from [get_cells {timebase_d_reg[*]}] -to [get_cells {timebase_dd_reg[*]}] 2.000

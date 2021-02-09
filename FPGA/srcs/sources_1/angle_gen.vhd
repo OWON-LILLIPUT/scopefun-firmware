@@ -28,12 +28,15 @@ entity angle_gen is
         bH : integer := 14; -- angle input precision high index
         bL : integer := -17 -- angle input precision low index
     );
-    Port ( clk : in STD_LOGIC;
-			 clk_en : in STD_LOGIC;
-	 generatorDelta : in sfixed(bH downto bL);
-	        kot_gen : out sfixed(bH downto 0);
-			  q_gen : out std_logic_vector(1 downto 0)
-			  );
+    Port ( 
+        clk : in STD_LOGIC;
+        clk_en : in STD_LOGIC;
+        generatorDelta : in sfixed(bH downto bL);
+        phase_sync : in std_logic;
+        phase_val : in sfixed(bH downto bL);
+        kot_gen : out sfixed(bH downto 0);
+        q_gen : out std_logic_vector(1 downto 0)
+        );
 			  
 attribute use_dsp48: string;
 --attribute use_dsp48 of angle_gen : entity is "automax";
@@ -53,7 +56,9 @@ signal next_angle : sfixed(bH downto bL):=to_sfixed(0,bH,bL);
 signal quadrant : integer range 0 to 3 := 0;
 signal generatorDelta_d : sfixed(bH downto bL):=to_sfixed(0,bH,bL);
 signal generatorDelta_dd : sfixed(bH downto bL):=to_sfixed(0,bH,bL);
-
+signal phase_val_d : sfixed(bH downto bL):=to_sfixed(0,bH,bL);
+signal phase_val_dd : sfixed(bH downto bL):=to_sfixed(0,bH,bL);
+signal phase_sync_d : std_logic:='0';
 signal init_complete : std_logic:='0';
 
 -- attribute strings
@@ -79,34 +84,51 @@ begin
    if (rising_edge(clk)) then	
 	
 		if clk_en = '1' then
-		
+		             			
 			-- register inputs
-			generatorDelta_d <= generatorDelta;
-			generatorDelta_dd <= generatorDelta_d;
-						
-            kot_gen_tmp <= '0' & next_angle(bH-1 downto 0);   -- angle output (0 to 2047)
-            kot_gen <= kot_gen_tmp;
-            q_gen_tmp <= std_logic_vector(to_unsigned(quadrant,2));
-            q_gen <= q_gen_tmp;           
-       
-            if (curr_angle(bH) = '1' and next_angle(bH)='0') or
-               (curr_angle(bH) = '0' and next_angle(bH)='1') then
-                  if quadrant = 3 then
-                       quadrant <= 0;
-                  else
-                       quadrant <= quadrant + 1;
-                  end if;
-            end if;
-       
-           curr_angle <= resize( arg => curr_angle + generatorDelta_dd,
-                                           left_index => bH,
-                                           right_index => bL,
-                                           overflow_style => fixed_wrap); -- start from 0 if overflow
-           next_angle <= curr_angle;
-     
-      end if;
+            generatorDelta_d <= generatorDelta;
+			generatorDelta_dd <= generatorDelta_d; 
+			phase_val_d <= phase_val;
+			phase_sync_d <= phase_sync;
 			
-	end if;
+            if phase_sync_d = '0' and phase_sync = '1' then
+                curr_angle <= phase_val_d;
+                next_angle <= phase_val_d;
+                case phase_val_d(bH downto bh-1) is
+                    when "00" => quadrant <= 0;
+                    when "01" => quadrant <= 1;
+                    when "10" => quadrant <= 2;
+                    when "11" => quadrant <= 3;
+                    when others => null;
+                end case;
+                                
+            else          
+			
+                kot_gen_tmp <= '0' & next_angle(bH-1 downto 0);   -- angle output (0 to 2047)
+                kot_gen <= kot_gen_tmp;
+                q_gen_tmp <= std_logic_vector(to_unsigned(quadrant,2));
+                q_gen <= q_gen_tmp;           
+       
+                if (curr_angle(bH) = '1' and next_angle(bH)='0') or
+                   (curr_angle(bH) = '0' and next_angle(bH)='1') then
+                      if quadrant = 3 then
+                           quadrant <= 0;
+                      else
+                           quadrant <= quadrant + 1;
+                      end if;
+                end if;
+       
+                curr_angle <= resize( arg => curr_angle + generatorDelta_dd,
+                                                left_index => bH,
+                                                right_index => bL,
+                                                overflow_style => fixed_wrap); -- start from 0 if overflow
+                next_angle <= curr_angle;
+                
+            end if;  -- phase_sync
+     
+        end if;  -- clk_en
+			
+    end if;
 
 end process;
 	
