@@ -1488,7 +1488,7 @@ begin
 				trig_level <= signed(cfg_do_B(25 downto 16));
 				trig_hysteresis <= signed(cfg_do_B(9 downto 0));
 			when 7 =>
-				pre_trigger(17 downto 2) <= unsigned(cfg_do_B(31 downto 16));
+--				pre_trigger(17 downto 2) <= unsigned(cfg_do_B(31 downto 16));
 				timebase <= cfg_do_B(4 downto 0);
 			when 8 =>
 				holdOff <= unsigned(cfg_do_B);
@@ -1539,6 +1539,8 @@ begin
 			    mavg_enA <= cfg_do_B(9);
 			    mavg_enB <= cfg_do_B(8);
 			when 28 =>
+			    pre_trigger(26 downto 2) <= unsigned(cfg_do_B(26 downto 2));
+			when 29 =>
 			    phase_val <= cfg_do_B(30 downto 16);
 			    digitalClkDivide <= unsigned(digitalClkDivide_tmp);
 			when others => null;
