@@ -1713,7 +1713,7 @@ begin
 					saved_sample_cnt <= to_integer(unsigned(pre_trigger_d));
 					-- if immediate trigger (roll mode)
 					if trigger_mode_d = "11" and pre_trigger_d = 0 then
-						GetSampleState <= ADC_E;
+						GetSampleState <= ADC_C;
 						triggered_led <= '1'; -- signal IS TRIGGERED indicator
 					-- if not immediate trigger, goto "WAIT FOR TRIGGER ARMED"
 					else

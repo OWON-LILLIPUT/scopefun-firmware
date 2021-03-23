@@ -104,7 +104,7 @@ begin
                                 
             else          
 			
-                kot_gen_tmp <= '0' & next_angle(bH-1 downto 0);   -- angle output (0 to 2047)
+                kot_gen_tmp <= '0' & next_angle(bH-1 downto 0);   -- angle output (0 to 16383)
                 kot_gen <= kot_gen_tmp;
                 q_gen_tmp <= std_logic_vector(to_unsigned(quadrant,2));
                 q_gen <= q_gen_tmp;           
@@ -121,7 +121,7 @@ begin
                 curr_angle <= resize( arg => curr_angle + generatorDelta_dd,
                                                 left_index => bH,
                                                 right_index => bL,
-                                                overflow_style => fixed_wrap); -- start from 0 if overflow
+                                                overflow_style => fixed_wrap); -- discards the overflow bit
                 next_angle <= curr_angle;
                 
             end if;  -- phase_sync

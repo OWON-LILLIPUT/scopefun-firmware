@@ -97,7 +97,7 @@ architecture Behavioral of awg_core_tb is
     --AWG2
     signal genSignal_2              : signed (11 downto 0);
     signal ram_addrb_awg_2          : STD_LOGIC_VECTOR (14 downto 0);
-    signal generatorType_2          : STD_LOGIC_VECTOR (3 downto 0) := std_logic_vector(to_unsigned(0,4));
+    signal generatorType_2          : STD_LOGIC_VECTOR (3 downto 0) := std_logic_vector(to_unsigned(1,4));
     signal generatorVoltage_2       : sfixed(0 downto -11):="011111111111";
     signal generatorOffset_2        : SIGNED (11 downto 0):="000000000000";
     signal generatorDuty_2          : signed(11 downto 0):="000000000000";
@@ -182,8 +182,8 @@ begin
         wait until rising_edge(clk);
         
         generator1On <= '1';
-        generatorDelta_1 <= std_logic_vector(to_unsigned(100000000,bH-bL+1));
-        generatorDelta_2 <= std_logic_vector(to_unsigned(100000000,bH-bL+1));
+        generatorDelta_1 <= "01010000000000000000000000000000";
+        generatorDelta_2 <= "01010000000000000000000000000000";
         generatorType_1 <= std_logic_vector(to_unsigned(3,4));
         generatorType_2 <= std_logic_vector(to_unsigned(3,4));
         generatorDuty_1 <= "000000000000";
